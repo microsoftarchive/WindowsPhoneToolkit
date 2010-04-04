@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.0">
+  <App xmlns="" ProductID="{c832ffa2-b064-4bdf-92b9-660a50bce1b8}" Title="PhoneApp" RuntimeType="SilverLight" Version="1.0.0.0" Genre="NormalApp"  Author="" Description="" Publisher="">
+    <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
+    <Capabilities>
+    </Capabilities>
+    <Tasks>
+      <DefaultTask  Name ="_default" PlaceHolderString="Default task"/>
+    </Tasks>
+    <Tokens>
+      <PrimaryToken TokenID="PhoneAppToken" TaskName="_default">
+        <TemplateType5>
+          <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
+          <Count>0</Count>
+          <Title>PhoneApp</Title>
+        </TemplateType5>
+      </PrimaryToken>
+    </Tokens>
+  </App>
+</Deployment>
