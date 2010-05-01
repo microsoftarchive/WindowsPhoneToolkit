@@ -37,7 +37,7 @@ namespace Phone.Controls.Samples
 
             // scroll view
             ScrollView = new PanoramaView(this, LayoutRoot);
-            ScrollView.AnimationCompleted += new AnimationCompleteEventHandler(ScrollView_AnimationCompleted);
+            ScrollView.ScrollCompleted += new ScrollCompleteEventHandler(ScrollView_ScrollCompleted);
 
             // control events
             SizeChanged += new SizeChangedEventHandler(OnSizeChanged);
@@ -55,37 +55,35 @@ namespace Phone.Controls.Samples
         #region Navigation
         public void ScrollPrev()
         {
-            // skip current animation
-            ScrollView.ScrollSkip();
+                // complete current animation
+                ScrollView.ScrollSkip();
 
             // move to previous item
-            int index = this.SelectedIndex - 1;
-            if (index < 0) index = Items.Count - 1;
-            double pos = this.Items.GetItemPosition(this.SelectedIndex) - this.Items.GetItemWidth(index);
-            ScrollView.ScrollTo(pos);
+            ScrollView.ScrollTo(this.SelectedIndex - 1);
         }
 
         public void ScrollNext()
         {
-            // skip current animation
+            // complete current animation
             ScrollView.ScrollSkip();
 
             // move to next item
-            int index = this.SelectedIndex;
-            double pos = this.Items.GetItemPosition(index) + this.Items.GetItemWidth(index);
-            ScrollView.ScrollTo(pos);
+            ScrollView.ScrollTo(this.SelectedIndex + 1);
         }
 
         private void MoveTo(int index)
         {
-            double pos = this.Items.GetItemPosition(index);
-            ScrollView.MoveTo(pos);
+            // complete current animation
+            ScrollView.ScrollSkip();
+
+            // move to item
+            ScrollView.MoveTo(index);
         }
 
-        void ScrollView_AnimationCompleted(object sender, AnimationCompleteEventArgs e)
+        void ScrollView_ScrollCompleted(object sender, ScrollCompleteEventArgs e)
         {
            // find out where we landed
-            SelectedIndex = this.Items.GetIndexOfPosition(e.Position);
+            SelectedIndex = e.SelectedIndex;
 
             // special case for when we only have 1 item :
             // the above code will not trigger the SelectedIndex change
@@ -149,8 +147,8 @@ namespace Phone.Controls.Samples
                 ui.ReleaseMouseCapture();
 
                 // the above code doesn't seem to work for unknown reasons
-                // let's just hook/override it for now...
-                //_hack.Set(e.ManipulationContainer, OnManipulationCompleted);
+                // let's just hook/override OnManipulationCompleted for now...
+                _hack.Set(e.ManipulationContainer, OnManipulationCompleted);
 
                 // move to position
                 double position = _tracker.Start.X - e.CumulativeManipulation.Translation.X;
@@ -187,10 +185,9 @@ namespace Phone.Controls.Samples
             }
 
             // find out which item is at screen center
-            double position = _tracker.Position.X;
-            double center = position + LayoutRoot.ActualWidth / 2;
+            double center = _tracker.Position.X + LayoutRoot.ActualWidth / 2;
             int index = this.Items.GetIndexOfPosition(center);
-            PanoramaItem item = this.Items.GetItem(index);
+            PanoramaItem item = (PanoramaItem)this.Items.GetItem(index);
 
             // cycle back to last item ?
             if (center < 0)
@@ -212,21 +209,21 @@ namespace Phone.Controls.Samples
             // close to left edge : snap left
             if (center - start < LayoutRoot.ActualWidth / 2)
             {
-                ScrollView.ScrollTo(start);
+                ScrollView.ScrollTo(index, Snapping.SnapLeft);
             }
 
             // close to right edge : snap right
             else if (center - start > item.Width - LayoutRoot.ActualWidth / 2)
             {
                 double end = start + item.Width;
-                ScrollView.ScrollTo(end - DefaultItemWidth);
+                ScrollView.ScrollTo(index, Snapping.SnapRight);
             }
 
             // nowhere close to edges but
             // we're asked to snap anyways
             else if (item.AutoSnap)
             {
-                ScrollView.ScrollTo(start);
+                ScrollView.ScrollTo(index);
             }
         }
 #endif
@@ -443,8 +440,8 @@ namespace Phone.Controls.Samples
             ctrl.MoveTo(ctrl.SelectedIndex);
 
             // raise event
-            PanoramaItem oldItem = ctrl.Items.GetItem(oldIndex);
-            PanoramaItem newItem = ctrl.Items.GetItem(newIndex);
+            PanoramaItem oldItem = (PanoramaItem)ctrl.Items.GetItem(oldIndex);
+            PanoramaItem newItem = (PanoramaItem)ctrl.Items.GetItem(newIndex);
             SelectionChangedEventArgs args = new SelectionChangedEventArgs(
                 (null == oldItem) ? new List<PanoramaItem> { } : new List<PanoramaItem> { oldItem },
                 (null == newItem) ? new List<PanoramaItem> { } : new List<PanoramaItem> { newItem });

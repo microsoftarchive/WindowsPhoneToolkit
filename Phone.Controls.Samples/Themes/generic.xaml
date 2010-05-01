@@ -17,23 +17,23 @@
                 <ControlTemplate TargetType="local:PanoramaControl">
                     <Canvas Name="LayoutRoot">
 
-                        <StackPanel Name="BackgroundImagePanel" Orientation="Horizontal" CacheMode="BitmapCache">
-                            <ContentPresenter Name="BackgroundImagePresenter"
+                        <StackPanel Name="BackgroundPanelHost" Orientation="Horizontal" CacheMode="BitmapCache">
+                            <ContentPresenter Name="BackgroundPanel"
                                               Height="{TemplateBinding Height}"
                                               Content="{TemplateBinding BackgroundImage}"
                                               ContentTemplate="{TemplateBinding BackgroundImageTemplate}"
                                               CacheMode="BitmapCache"/>
                         </StackPanel>
 
-                        <StackPanel Name="TitlePanel" Orientation="Horizontal" Margin="10,0,0,0" CacheMode="BitmapCache">
-                            <ContentPresenter Name="TitlePresenter"
+                        <StackPanel Name="TitlePanelHost" Orientation="Horizontal" Margin="10,0,0,0" CacheMode="BitmapCache">
+                            <ContentPresenter Name="TitlePanel"
                                               Content="{TemplateBinding Title}"
                                               ContentTemplate="{TemplateBinding TitleTemplate}"
                                               CacheMode="BitmapCache"/>
                         </StackPanel>
 
-                        <StackPanel Name="ItemsPanel" Orientation="Horizontal" Margin="22,178,0,0" CacheMode="BitmapCache">
-                            <ItemsPresenter Name="ItemsPresenter"
+                        <StackPanel Name="ItemsPanelHost" Orientation="Horizontal" Margin="22,178,0,0" CacheMode="BitmapCache">
+                            <ItemsPresenter Name="ItemsPanel"
                                             CacheMode="BitmapCache"/>
                         </StackPanel>
 

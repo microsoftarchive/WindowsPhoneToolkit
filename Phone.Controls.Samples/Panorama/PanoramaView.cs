@@ -12,13 +12,10 @@ using System.Windows.Media.Imaging;
 
 namespace Phone.Controls.Samples
 {
-    internal delegate void AnimationCompleteEventHandler(object sender, AnimationCompleteEventArgs e);
-    internal class AnimationCompleteEventArgs
+    internal enum Snapping
     {
-        public double Position;
-        public AnimationCompleteEventArgs()
-        {
-        }
+        SnapLeft = 0,
+        SnapRight
     }
 
     /// <summary>
@@ -27,44 +24,36 @@ namespace Phone.Controls.Samples
     /// </summary>
     internal class PanoramaView
     {
-        internal struct PanelHost
-        {
-            public TranslateTransform Transform;
-            public double Width;
-            public double Padding;
-            public double Speed;
-            public void Reset() { Width = 0.0;  Speed = 1.0; }
-        }
-
         private const string LayoutRootName = "LayoutRoot";
-        private const string PresenterBackgroundName = "BackgroundImagePresenter";
-        private const string PresenterTitleName = "TitlePresenter";
-        private const string PresenterItemsName = "ItemsPresenter";
-        private const string PanelBackgroundName = "BackgroundImagePanel";
-        private const string PanelTitleName = "TitlePanel";
-        private const string PanelItemsName = "ItemsPanel";
-        private const double AnimationDuration = 1000.0;
+        private const string BackgroundPanelName = "BackgroundPanel";
+        private const string TitlePanelName = "TitlePanel";
+        private const string ItemsPanelName = "ItemsPanel";
+        private const string BackgroundPanelHostName = "BackgroundPanelHost";
+        private const string TitlePanelHostName = "TitlePanelHost";
+        private const string ItemsPanelHostName = "ItemsPanelHost";
 
-        private PanoramaControl Parent;
         private Panel LayoutRoot;
+        private PanoramaControl Parent;
+        private ItemCollection Items;
 
+        private ScrollHost BackgroundHost;
+        private ScrollHost TitleHost;
+        private ScrollHost ItemsHost;
+
+        private const double AnimationDuration = 1000.0;
         private Storyboard Storyboard;
-        public event AnimationCompleteEventHandler AnimationCompleted;
+        public event ScrollCompleteEventHandler ScrollCompleted;
 
-        private PanelHost Background;
-        private PanelHost Title;
-        private PanelHost Items;
-
-        private bool ready = false;
+        private bool _ready = false;
 
         public PanoramaView(PanoramaControl parent, Panel root)
         {
-            Parent = parent;
             LayoutRoot = root;
+            Parent = parent;
 
-            Background.Transform = new TranslateTransform();
-            Title.Transform = new TranslateTransform();
-            Items.Transform = new TranslateTransform();
+            BackgroundHost.Transform = new TranslateTransform();
+            TitleHost.Transform = new TranslateTransform();
+            ItemsHost.Transform = new TranslateTransform();
         }
 
         /// <summary>
@@ -87,7 +76,7 @@ namespace Phone.Controls.Samples
 
 
             // insert items ?
-            if (Parent.Items.Count > 0)
+            if (Items.Count > 0)
             {
                 WriteableBitmap bitmap;
                 Image image;
@@ -122,100 +111,101 @@ namespace Phone.Controls.Samples
 
         public void Initialize()
         {
-            if (!ready)
+            if (!_ready)
             {
                 // fetch template elements
-                ContentPresenter PresenterBackground = LayoutRoot.FindName(PresenterBackgroundName) as ContentPresenter;
-                ContentPresenter PresenterTitle = LayoutRoot.FindName(PresenterTitleName) as ContentPresenter;
-                ItemsPresenter PresenterItems = LayoutRoot.FindName(PresenterItemsName) as ItemsPresenter;
-                Panel PanelBackground = LayoutRoot.FindName(PanelBackgroundName) as Panel;
-                Panel PanelTitle = LayoutRoot.FindName(PanelTitleName) as Panel;
-                Panel PanelItems = LayoutRoot.FindName(PanelItemsName) as Panel;
-                if (null == PresenterBackground) throw new ArgumentException(string.Format("Cannot find {0}.", PresenterBackgroundName));
-                if (null == PresenterTitle) throw new ArgumentException(string.Format("Cannot find {0}.", PresenterTitleName));
-                if (null == PresenterItems) throw new ArgumentException(string.Format("Cannot find {0}.", PresenterItemsName));
-                if (null == PanelBackground) throw new ArgumentException(string.Format("Cannot find {0}.", PanelBackgroundName));
-                if (null == PanelTitle) throw new ArgumentException(string.Format("Cannot find {0}.", PanelTitleName));
-                if (null == PanelItems) throw new ArgumentException(string.Format("Cannot find {0}.", PanelItemsName));
+                ContentPresenter BackgroundPanel = LayoutRoot.FindName(BackgroundPanelName) as ContentPresenter;
+                ContentPresenter TitlePanel = LayoutRoot.FindName(TitlePanelName) as ContentPresenter;
+                ItemsPresenter ItemsPanel = LayoutRoot.FindName(ItemsPanelName) as ItemsPresenter;
+                Panel BackgroundPanelHost = LayoutRoot.FindName(BackgroundPanelHostName) as Panel;
+                Panel TitlePanelHost = LayoutRoot.FindName(TitlePanelHostName) as Panel;
+                Panel ItemsPanelHost = LayoutRoot.FindName(ItemsPanelHostName) as Panel;
+                if (null == BackgroundPanel) throw new ArgumentException(string.Format("Cannot find {0}.", BackgroundPanelName));
+                if (null == TitlePanel) throw new ArgumentException(string.Format("Cannot find {0}.", TitlePanelName));
+                if (null == ItemsPanel) throw new ArgumentException(string.Format("Cannot find {0}.", ItemsPanelName));
+                if (null == BackgroundPanelHost) throw new ArgumentException(string.Format("Cannot find {0}.", BackgroundPanelHostName));
+                if (null == TitlePanelHost) throw new ArgumentException(string.Format("Cannot find {0}.", TitlePanelHostName));
+                if (null == ItemsPanelHost) throw new ArgumentException(string.Format("Cannot find {0}.", ItemsPanelHostName));
 
                 // reset panelhosts
-                Background.Reset();
-                Title.Reset();
-                Items.Reset();
+                BackgroundHost.Reset();
+                TitleHost.Reset();
+                ItemsHost.Reset();
 
                 // create transforms
-                PanelBackground.RenderTransform = Background.Transform;
-                PanelTitle.RenderTransform = Title.Transform;
-                PanelItems.RenderTransform = Items.Transform;
+                BackgroundPanelHost.RenderTransform = BackgroundHost.Transform;
+                TitlePanelHost.RenderTransform = TitleHost.Transform;
+                ItemsPanelHost.RenderTransform = ItemsHost.Transform;
 
                 // fetch items details
+                Items = Parent.Items;
                 FrameworkElement item0 = null;
                 FrameworkElement itemN = null;
-                if (Parent.Items.Count > 0)
+                if (Items.Count > 0)
                 {
                     int index0 = 0;
-                    int indexN = Parent.Items.Count - 1;
-                    item0 = Parent.Items[index0] as FrameworkElement;
-                    itemN = Parent.Items[indexN] as FrameworkElement;
+                    int indexN = Items.Count - 1;
+                    item0 = Items[index0] as FrameworkElement;
+                    itemN = Items[indexN] as FrameworkElement;
                 }
 
                 // reset panelhosts layout
-                Title.Padding = LayoutRoot.ActualWidth;
-                InitializeHost(PanelBackground, PresenterBackground, PresenterBackground, PresenterBackground, Background.Padding);
-                InitializeHost(PanelTitle, PresenterTitle, PresenterTitle, PresenterTitle, Title.Padding);
-                InitializeHost(PanelItems, PresenterItems, itemN, item0, Items.Padding);
+                TitleHost.Padding = LayoutRoot.ActualWidth;
+                InitializeHost(BackgroundPanelHost, BackgroundPanel, BackgroundPanel, BackgroundPanel, BackgroundHost.Padding);
+                InitializeHost(TitlePanelHost, TitlePanel, TitlePanel, TitlePanel, TitleHost.Padding);
+                InitializeHost(ItemsPanelHost, ItemsPanel, itemN, item0, ItemsHost.Padding);
 
-                if (Parent.Items.Count > 0)
+                if (Items.Count > 0)
                 {
                     double maxN = Math.Max(itemN.Width, LayoutRoot.ActualWidth);
 
                     // panelhosts width
-                    Background.Width = PresenterBackground.ActualWidth;
-                    Title.Width = PresenterTitle.ActualWidth;
-                    Items.Width = Parent.Items.GetTotalWidth() - itemN.Width + maxN;
+                    BackgroundHost.Width = BackgroundPanel.ActualWidth;
+                    TitleHost.Width = TitlePanel.ActualWidth;
+                    ItemsHost.Width = Items.GetTotalWidth() - itemN.Width + maxN;
 
                     // panelhosts speed
-                    Title.Speed = Background.Width / Items.Width;
-                    Title.Speed = Title.Width / Items.Width;
-                    if (Items.Width > maxN)
-                        Background.Speed = (Background.Width - maxN) / (Items.Width - maxN);
+                    TitleHost.Speed = BackgroundHost.Width / ItemsHost.Width;
+                    TitleHost.Speed = TitleHost.Width / ItemsHost.Width;
+                    if (ItemsHost.Width > maxN)
+                        BackgroundHost.Speed = (BackgroundHost.Width - maxN) / (ItemsHost.Width - maxN);
                 }
 
                 // done
-                ready = true;
+                _ready = true;
             }
         }
 
         public void Reset(bool lazy = true)
         {
-            ready = false;
+            _ready = false;
 
             // reset now ?
             if (!lazy) Initialize();
         }
 
-        public void MoveTo(double pos)
+        public void MoveTo(int index)
         {
             Initialize();
 
             // nothing to do
-            if (Parent.Items.Count == 0)
+            if (Items.Count == 0)
                 return;
 
             // move to new position
-            Position = pos;
+            Position = Items.GetItemPosition(index);
         }
 
-        public void ScrollTo(double pos)
+        public void ScrollTo(int index, Snapping snap = Snapping.SnapLeft)
         {
             Initialize();
 
             // nothing to do
-            if (Parent.Items.Count == 0)
+            if (Items.Count == 0)
                 return;
 
             // animate to new position
-            this.AnimateStart(-pos, AnimationDuration);
+            this.ScrollStart(index, snap, AnimationDuration);
         }
 
         public void ScrollSkip()
@@ -223,7 +213,7 @@ namespace Phone.Controls.Samples
             Initialize();
 
             // nothing to do
-            if (Parent.Items.Count == 0)
+            if (Items.Count == 0)
                 return;
 
             // storyboard not completed yet
@@ -243,72 +233,107 @@ namespace Phone.Controls.Samples
             {
                 Initialize();
 
-                return -Items.Transform.X / Items.Speed;
+                return -ItemsHost.Transform.X / ItemsHost.Speed;
             }
             set
             {
                 Initialize();
 
                 // nothing to do
-                if (Parent.Items.Count == 0)
+                if (Items.Count == 0)
                     return;
 
                 // complete current animation
                 ScrollSkip();
 
                 // adjust transforms
-                Background.Transform.X = -value * Background.Speed;
-                Title.Transform.X = -value * Title.Speed;
-                Items.Transform.X = -value * Items.Speed;
+                BackgroundHost.Transform.X = -value * BackgroundHost.Speed;
+                TitleHost.Transform.X = -value * TitleHost.Speed;
+                ItemsHost.Transform.X = -value * ItemsHost.Speed;
             }
         }
 
-        private void AnimateStart(double value, double milliseconds = 0)
+        private void ScrollStart(int index, Snapping snap, double milliseconds = 0)
         {
             Initialize();
 
-            // no animation : just change the values
-            if (milliseconds == 0)
+            // positions
+            double offsetBackground = 0.0;
+            double offsetTitle = 0.0;
+            double offsetItems = 0.0;
+
+            //
+            // adjust destination item positions
+            //
+            int index0 = 0;
+            int indexN = Items.Count - 1;
+
+            // scroll from first to last
+            if (index < index0)
             {
-                Position = -value;
-                return;
+                if (snap == Snapping.SnapLeft)
+                    offsetItems = Items.GetItemPosition(index0) - Items.GetItemWidth(indexN);
+                else
+                    offsetItems = Items.GetItemPosition(index0) - Parent.DefaultItemWidth;
+            }
+            // scroll from last to first
+            else if (index > indexN)
+            {
+                // since we're moving left to right, and only a item at a time
+                // we can only snap to left here...
+                offsetItems = Items.GetItemPosition(indexN) + Items.GetItemWidth(indexN);
+            }
+            // normal scroll
+            else
+            {
+                if (snap == Snapping.SnapLeft)
+                    offsetItems = Items.GetItemPosition(index);
+                else
+                    offsetItems = Items.GetItemPosition(index) + Items.GetItemWidth(index) - Parent.DefaultItemWidth;
             }
 
-            // adjust speed
-            double offset = Math.Abs(value - Position);
+            //
+            // adjust animation speed
+            //
+            double offset = Math.Abs(offsetItems - Position);
             if (offset < LayoutRoot.ActualWidth)
             {
                 milliseconds *= offset / LayoutRoot.ActualWidth;
             }
 
-            double offsetBackground = value * Background.Speed;
-            double offsetTitle = value * Title.Speed;
-            double offsetItems = value * Items.Speed;
+            //
+            // adjust positions
+            //
+            offsetBackground = offsetItems * BackgroundHost.Speed;
+            offsetTitle = offsetItems * TitleHost.Speed;
+            offsetItems = offsetItems * ItemsHost.Speed;
 
             // back to last
-            if (value > 0)
+            if (offsetItems < 0)
             {
-                offsetBackground = Items.Width - Parent.Items.GetLastItemPosition();
-                offsetTitle = (Items.Width - Parent.Items.GetLastItemPosition()) * Title.Speed + Title.Padding;
-                if (Parent.Items.Count == 1)
+                offsetBackground = Items.GetLastItemPosition() - ItemsHost.Width;
+                offsetTitle = offsetBackground * TitleHost.Speed - TitleHost.Padding;
+                if (Items.Count == 1)
                 {
                     // only 1 item : scroll the entire background
-                    offsetBackground = Background.Width;
+                    offsetBackground = -BackgroundHost.Width;
                 }
             }
             // back to first
-            else if (value <= -Parent.Items.GetTotalWidth())
+            else if (offsetItems >= Items.GetTotalWidth())
             {
-                offsetBackground = -Background.Width;
-                offsetTitle = -(Title.Width + Title.Padding);
+                offsetBackground = BackgroundHost.Width;
+                offsetTitle = TitleHost.Width + TitleHost.Padding;
             }
 
-            // start a new storyboard
+            //
+            // start storyboard
+            //
             Storyboard = new Storyboard();
             Storyboard.Completed += new EventHandler(Storyboard_Completed);
-            Storyboard.Children.Add(CreateAnimation(Background.Transform, offsetBackground, milliseconds));
-            Storyboard.Children.Add(CreateAnimation(Title.Transform, offsetTitle, milliseconds));
-            Storyboard.Children.Add(CreateAnimation(Items.Transform, offsetItems, milliseconds));
+            Storyboard.Children.Add(CreateAnimation(BackgroundHost.Transform,- offsetBackground, milliseconds));
+            Storyboard.Children.Add(CreateAnimation(TitleHost.Transform, -offsetTitle, milliseconds));
+            Storyboard.Children.Add(CreateAnimation(ItemsHost.Transform, -offsetItems, milliseconds));
             Storyboard.Begin();
         }
 
@@ -336,9 +361,12 @@ namespace Phone.Controls.Samples
             if (null != sb)
                 sb.Completed -= new EventHandler(Storyboard_Completed);
 
+            // find selected item
+            int index = Items.GetIndexOfPosition(this.Position);
+
             // raise event for any listener out there
-            if (null != AnimationCompleted)
-                AnimationCompleted(this, new AnimationCompleteEventArgs() { Position = this.Position });
+            if (null != ScrollCompleted)
+                ScrollCompleted(this, new ScrollCompleteEventArgs() { SelectedIndex = index });
         }
     }
 }

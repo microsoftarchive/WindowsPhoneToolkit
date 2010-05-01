@@ -4,20 +4,20 @@ namespace System.Windows.Controls
 {
     public static class ItemCollectionExtensions
     {
-        public static PanoramaItem GetItem(this ItemCollection items, int index)
+        public static FrameworkElement GetItem(this ItemCollection items, int index)
         {
             if ((index >= 0) && (index < items.Count))
-                return (PanoramaItem)items[index];
+                return (FrameworkElement)items[index];
 
             return null;
         }
 
-        public static PanoramaItem GetLastItem(this ItemCollection items)
+        public static FrameworkElement GetLastItem(this ItemCollection items)
         {
             if (items.Count == 0)
                 return null;
 
-            return (PanoramaItem)items[items.Count - 1];
+            return (FrameworkElement)items[items.Count - 1];
         }
 
         public static int GetIndexOfPosition(this ItemCollection items, double position)
@@ -50,8 +50,9 @@ namespace System.Windows.Controls
             {
                 for (int i = 0; i != index; i++)
                 {
-                    PanoramaItem item = (PanoramaItem)items[i];
-                    position += item.Width;
+                    FrameworkElement item = items.GetItem(i);
+                    if (null != item)
+                        position += item.Width;
                 }
             }
 
@@ -65,15 +66,16 @@ namespace System.Windows.Controls
 
         public static double GetItemWidth(this ItemCollection items, int index)
         {
-            if ((index >= 0) && (index < items.Count))
-                return ((PanoramaItem)items[index]).Width;
+            FrameworkElement item = items.GetItem(index);
+            if (null != item)
+                return item.Width;
 
             return 0.0;
         }
 
         public static double GetTotalWidth(this ItemCollection items)
         {
-            PanoramaItem item = items.GetLastItem();
+            FrameworkElement item = items.GetLastItem();
             if (null == item)
                 return 0.0;
 
