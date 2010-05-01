@@ -55,9 +55,6 @@
     <Reference Include="system" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Windows.Controls.Toolkit">
-      <HintPath>..\..\..\Program Files (x86)\Microsoft SDKs\Silverlight\v4.0\Toolkit\Nov09\Bin\System.Windows.Controls.Toolkit.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

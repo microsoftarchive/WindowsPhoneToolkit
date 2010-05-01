@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:phone="clr-namespace:Phone.Controls.Samples;assembly=Phone.Controls.Samples"
-    xmlns:slsdk="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -36,7 +35,7 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
     </UserControl.Resources>
@@ -62,14 +61,14 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </phone:PanoramaItem>
-            <phone:PanoramaItem Header="samples" Width="825" AutoSnap="False">
-                <ListBox x:Name="listBox2"
+            <phone:PanoramaItem Header="samples">
+                <ListBox x:Name="listBox2" Height="500"
                          Style="{StaticResource PanoramaListBox}"
                          ItemContainerStyle="{StaticResource PanoramaListBoxContainer}"
                          SelectionChanged="listBox_SelectionChanged">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <slsdk:WrapPanel VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal" CacheMode="BitmapCache" />
+                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Vertical" CacheMode="BitmapCache" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>

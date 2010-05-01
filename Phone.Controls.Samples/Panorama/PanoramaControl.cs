@@ -117,9 +117,8 @@ namespace Phone.Controls.Samples
 
         #region Multitouch events
 #if WINDOWS_PHONE
-        // multitouch position
-        double startPosition;
-
+        // manipulation tracker
+        ManipulationTracker _tracker;
         protected override void OnManipulationStarted(ManipulationStartedEventArgs e)
         {
             e.Handled = true;
@@ -127,38 +126,51 @@ namespace Phone.Controls.Samples
             // skip current animation (if any)
             ScrollView.ScrollSkip();
 
-            // capture position
-            startPosition = ScrollView.Position;
+            // start tracking and capture starting position
+            _tracker = new ManipulationTracker(Orientation.Horizontal);
+            _tracker.StartTracking(new Point(ScrollView.Position, 0.0));
         }
 
         ManipulationHook _hack = new ManipulationHook();
         protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
         {
-            e.Handled = true;
+            // manipulation canceled
+            if (_tracker.Canceled) return;
 
-            // cancel capture from current object to disable behaviors
-            // for example, a button will not trigger the Click event
-            // after we've done scrolling
-            UIElement ui = e.ManipulationContainer as UIElement;
-            ui.ReleaseMouseCapture();
+            if (_tracker.TrackManipulation(e.CumulativeManipulation.Translation))
+            {
+                // handle this one
+                e.Handled = true;
 
-            // the above code doesn't seem to work for unknown reasons
-            // let's just hook/override it for now...
-            _hack.Set(e.ManipulationContainer, OnManipulationCompleted);
+                // cancel capture from current object to disable behaviors
+                // for example, a button will not trigger the Click event
+                // after we've done scrolling
+                UIElement ui = e.ManipulationContainer as UIElement;
+                ui.ReleaseMouseCapture();
 
-            // new position
-            double position = startPosition - e.CumulativeManipulation.Translation.X;
+                // the above code doesn't seem to work for unknown reasons
+                // let's just hook/override it for now...
+                //_hack.Set(e.ManipulationContainer, OnManipulationCompleted);
 
-            // move to position
-            ScrollView.MoveTo(position);
+                // move to position
+                double position = _tracker.Start.X - e.CumulativeManipulation.Translation.X;
+                ScrollView.Position = _tracker.Position.X;
+            }
+
+            // complete manipulation
+            if (_tracker.Completed) e.Complete();
         }
 
         protected override void OnManipulationCompleted(ManipulationCompletedEventArgs e)
         {
+            // manipulation canceled
+            if (_tracker.Canceled) return;
+
+            // handle this one
             e.Handled = true;
 
-            // new position
-            double position = startPosition - e.TotalManipulation.Translation.X;
+            // end tracking
+            _tracker.TrackManipulation(e.TotalManipulation.Translation);
 
             // get direction
             int direction = (int)Math.Sign(-e.FinalVelocities.LinearVelocity.X);
@@ -175,6 +187,7 @@ namespace Phone.Controls.Samples
             }
 
             // find out which item is at screen center
+            double position = _tracker.Position.X;
             double center = position + LayoutRoot.ActualWidth / 2;
             int index = this.Items.GetIndexOfPosition(center);
             PanoramaItem item = this.Items.GetItem(index);

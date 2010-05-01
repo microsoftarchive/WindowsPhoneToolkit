@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="ItemCollectionExtensions.cs" />
     <Compile Include="ManipulationHook.cs" />
+    <Compile Include="ManipulationTracker.cs" />
     <Compile Include="Panorama\PanoramaControl.cs" />
     <Compile Include="Panorama\PanoramaItem.cs" />
     <Compile Include="Panorama\PanoramaView.cs" />
