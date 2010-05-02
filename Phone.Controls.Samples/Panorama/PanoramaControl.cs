@@ -37,7 +37,7 @@ namespace Phone.Controls.Samples
 
             // scroll view
             ScrollView = new PanoramaView(this, LayoutRoot);
-            ScrollView.ScrollCompleted += new ScrollCompleteEventHandler(ScrollView_ScrollCompleted);
+            ScrollView.ScrollCompleted += new ScrollCompletedEventHandler(ScrollView_ScrollCompleted);
 
             // control events
             SizeChanged += new SizeChangedEventHandler(OnSizeChanged);
@@ -80,7 +80,7 @@ namespace Phone.Controls.Samples
             ScrollView.MoveTo(index);
         }
 
-        void ScrollView_ScrollCompleted(object sender, ScrollCompleteEventArgs e)
+        void ScrollView_ScrollCompleted(object sender, ScrollCompletedEventArgs e)
         {
            // find out where we landed
             SelectedIndex = e.SelectedIndex;

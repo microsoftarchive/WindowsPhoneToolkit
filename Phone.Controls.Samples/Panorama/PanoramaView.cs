@@ -42,7 +42,7 @@ namespace Phone.Controls.Samples
 
         private const double AnimationDuration = 1000.0;
         private Storyboard Storyboard;
-        public event ScrollCompleteEventHandler ScrollCompleted;
+        public event ScrollCompletedEventHandler ScrollCompleted;
 
         private bool _ready = false;
 
@@ -366,7 +366,7 @@ namespace Phone.Controls.Samples
 
             // raise event for any listener out there
             if (null != ScrollCompleted)
-                ScrollCompleted(this, new ScrollCompleteEventArgs() { SelectedIndex = index });
+                ScrollCompleted(this, new ScrollCompletedEventArgs() { SelectedIndex = index });
         }
     }
 }

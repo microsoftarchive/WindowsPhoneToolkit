@@ -60,7 +60,8 @@
                 <DataTemplate>
                     <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
                                Margin="0,-75,0,0"
-                               FontSize="186" Foreground="White"
+                               FontSize="186" 
+                               Foreground="{TemplateBinding Foreground}"
                                CacheMode="BitmapCache"/>
                 </DataTemplate>
             </Setter.Value>
@@ -85,14 +86,13 @@
         <Setter Property="AutoSnap" Value="True" />
         <Setter Property="FontFamily" Value="Segoe WP SemiLight" />
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Background" Value="#FF1F1F1F"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:PanoramaItem">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="95"/>
-                            <RowDefinition Height="27"/>
+                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="25"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <ContentControl x:Name="PanoramaItemHeader"
