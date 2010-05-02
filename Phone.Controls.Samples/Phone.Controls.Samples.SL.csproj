@@ -58,7 +58,7 @@
     <Compile Include="Common\ItemCollectionExtensions.cs" />
     <Compile Include="Common\ManipulationHook.cs" />
     <Compile Include="Common\ManipulationTracker.cs" />
-    <Compile Include="Common\ScrollCompleteEvent.cs" />
+    <Compile Include="Common\ScrollCompletedEvent.cs" />
     <Compile Include="Common\WriteableBitmapExtensions.cs" />
     <Compile Include="Panorama\PanoramaControl.cs" />
     <Compile Include="Panorama\PanoramaItem.cs" />
