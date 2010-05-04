@@ -27,7 +27,7 @@ namespace PictureViewer
             // initialize
             PicturesLoader.LoadProgress += Picture_LoadProgress;
             PicturesLoader.LoadCompleted += Picture_LoadCompleted;
-            PicturesLoader.LoadPictures();
+            PicturesLoader.LoadPicturesAsync();
         }
 
         void Picture_LoadProgress(object sender, PicturesLoaderProgressEventArgs e)

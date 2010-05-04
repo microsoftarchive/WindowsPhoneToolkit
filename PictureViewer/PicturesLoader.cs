@@ -7,6 +7,8 @@ using System.Threading;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Xml.Linq;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace PictureViewer
 {
@@ -26,27 +28,29 @@ namespace PictureViewer
     {
         private static readonly string BingArchiveUrl = "http://www.bing.com/HPImageArchive.aspx?format=xml&idx={0}&n=1";
         private static readonly Uri BingUri = new Uri("http://www.bing.com", UriKind.Absolute);
-        private static readonly int BingImageCount = 25;
+        private static readonly int BingImageCount = 15;
         private static readonly string PicturesFolder = "pictures";
-        private static readonly string PicturesConfig = Path.Combine(PicturesFolder, "pictures.xml");
+        private static readonly string PicturesConfig = Path.Combine(PicturesFolder, "config.xml");
 
         public static event PicturesLoaderCompletedEventHandler LoadCompleted;
         public static event PicturesLoaderProgressEventHandler LoadProgress;
 
-        private static Dictionary<string, Picture> _pictures = null;
+        private static XmlSerializer _serializer = new XmlSerializer(typeof(List<Picture>));
+        private static List<Picture> _pictures = null;
         private static ManualResetEvent _event = new ManualResetEvent(false);
 
         public IList<Picture> Recent { get { return PicturesLoader.GetPictures(6); } }
         public IList<Picture> Samples { get { return PicturesLoader.GetPictures(); } }
 
-        public static void LoadPictures()
+        public static void LoadPicturesAsync()
         {
             if (null == _pictures)
             {
-                _pictures = new Dictionary<string, Picture>();
+                _pictures = new List<Picture>();
 
                 // load pictures
                 // start with isolated storage
+                InitStorage();
                 if (!LoadPicturesFromStorage())
                 {
                     // fall back to web
@@ -62,22 +66,16 @@ namespace PictureViewer
             if (null == _pictures)
                 return null;
 
-            List<Picture> pictures = new List<Picture>();
+            // query pictureS
+            var q = from p in _pictures
+                    select p;
 
-            // count not specified
-            // return all
-            if (max == 0) max = _pictures.Count;
+            // get Top(max)
+            if (max > 0)
+                q = q.Take(max); 
 
-            // build pictures list
-            int num = 0;
-            foreach (var pic in _pictures)
-            {
-                pictures.Add(pic.Value);
-                if (++num >= max) break;
-            }
-
-            // done
-            return pictures;
+            // return pictures
+            return q.ToList();
         }
 
         public static Picture Get(string name)
@@ -87,30 +85,40 @@ namespace PictureViewer
             if (null == _pictures)
                 return null;
 
-            return _pictures[name];
+            // query pictures, filter on Name
+            var q = from p in _pictures
+                    where p.Name == name
+                    select p;
+
+            return q.FirstOrDefault();
         }
 
         #region IsolatedStorage
-        private static void InitStorage(IsolatedStorageFile store, bool reset = false)
+        private static void InitStorage(bool reset = false)
         {
+            IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication();
+
             // reset storage ?
-            if (reset) store.Remove();
+            if (reset)
+            {
+                store.Remove();
+                store = IsolatedStorageFile.GetUserStoreForApplication();
+            }
 
             // create folder if not exists
             if (!store.DirectoryExists(PicturesFolder))
                 store.CreateDirectory(PicturesFolder);
         }
 
-        private static Stream LoadFromStorage(string url)
+        private static Stream LoadFileFromStorage(string url)
         {
             IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication();
             return store.OpenFile(url, FileMode.Open);
         }
 
-        private static void SaveToStorage(string url, Stream stream)
+        private static void SaveFileToStorage(string url, Stream stream)
         {
             IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication();
-            InitStorage(store);
 
             // allocate buffer
             int lenght = (int)stream.Length;
@@ -129,40 +137,15 @@ namespace PictureViewer
             }
         }
 
-        private static void SaveToStorage(string url, string text)
+        private static void SavePicturesToStorage()
         {
             IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication();
-            InitStorage(store);
 
             // create a new file (overwrite existing)
-            using (IsolatedStorageFileStream file = store.CreateFile(url))
+            using (IsolatedStorageFileStream file = store.CreateFile(PicturesConfig))
             {
-                using (StreamWriter stream = new StreamWriter(file))
-                    stream.Write(text);
+                _serializer.Serialize(file, _pictures);
             }
-        }
-
-        private static string GetConfigXml()
-        {
-            if (null == _pictures)
-                return string.Empty;
-
-            // build XML document
-            XElement xml = new XElement("images");
-            foreach (var image in _pictures)
-            {
-                Picture picture = image.Value;
-
-                // xml
-                xml.Add(new XElement("image",
-                    new XElement("name", picture.Name),
-                    new XElement("startdate", picture.Date),
-                    new XElement("copyright", picture.Desc),
-                    new XElement("url", picture.Url)
-                    ));
-            }
-
-            return xml.ToString();
         }
 
         private static bool LoadPicturesFromStorage()
@@ -170,32 +153,17 @@ namespace PictureViewer
             try
             {
                 // load XML
-                using (Stream file = LoadFromStorage(PicturesConfig))
+                using (Stream file = LoadFileFromStorage(PicturesConfig))
                 {
-                    XDocument xml = XDocument.Load(file);
-                    var images = from x in xml.Descendants("image")
-                                 select new
-                                 {
-                                     Name = x.Element("name").Value,
-                                     Date = x.Element("startdate").Value,
-                                     Desc = x.Element("copyright").Value,
-                                     Url = x.Element("url").Value
-                                 };
-                    foreach (var image in images)
+                    // deserialize xml data to array of pictures
+                    _pictures = (List<Picture>)_serializer.Deserialize(file);
+                    
+                    // load each bitmap image
+                    foreach (var picture in _pictures)
                     {
-                        Picture picture = new Picture()
-                        {
-                            Name = image.Name,
-                            Date = image.Date,
-                            Desc = image.Desc,
-                            Url = image.Url,
-                            Bitmap = new BitmapImage()
-                        };
-                        using (Stream stream = LoadFromStorage(picture.Url))
+                        picture.Bitmap = new BitmapImage();
+                        using (Stream stream = LoadFileFromStorage(picture.Url))
                             picture.Bitmap.SetSource(stream);
-
-                        // add picture to dictionary
-                        _pictures.Add(picture.Name, picture);
                     }
 
                     // notify we're done
@@ -210,7 +178,7 @@ namespace PictureViewer
 
             return true;
         }
-#endregion IsolatedStorage
+        #endregion IsolatedStorage
 
         #region WebClient
         private static bool LoadPicturesFromWeb()
@@ -238,7 +206,7 @@ namespace PictureViewer
                 }
 
                 // save pictures list
-                SaveToStorage(PicturesConfig, GetConfigXml());
+                SavePicturesToStorage();
 
                 // notify we're done
                 if (null != LoadCompleted)
@@ -254,40 +222,43 @@ namespace PictureViewer
             {
                 using (Stream s = e.Result)
                 {
-                    XDocument xml = XDocument.Load(s);
-                    var images = from x in xml.Descendants("image")
-                                 select new
-                                 {
-                                     Date = x.Element("startdate").Value,
-                                     Desc = x.Element("copyright").Value,
-                                     Url = x.Element("url").Value
-                                 };
-                    var image = images.FirstOrDefault();
-                    if (null != image)
+                    if (s.Length > 0)
                     {
-                        Picture picture = new Picture()
+                        XDocument xml = XDocument.Load(s);
+                        var images = from x in xml.Descendants("image")
+                                     select new
+                                     {
+                                         Date = x.Element("startdate").Value,
+                                         Desc = x.Element("copyright").Value,
+                                         Url = x.Element("url").Value
+                                     };
+                        var image = images.FirstOrDefault();
+                        if (null != image)
                         {
-                            Name = image.Url,
-                            Date = image.Date,
-                            Desc = image.Desc,
-                            Url = image.Url,
-                            Bitmap = new BitmapImage()
-                        };
+                            Picture picture = new Picture()
+                            {
+                                Name = image.Url,
+                                Date = image.Date,
+                                Desc = image.Desc,
+                                Url = image.Url,
+                                Bitmap = new BitmapImage()
+                            };
 
-                        // parse name
-                        // format : /xxx/yyy/zzz/ImageName_XX-XX1234567890.jpg
-                        int start = image.Url.LastIndexOf('/') + 1;
-                        int end = image.Url.IndexOf('_');
-                        if ((start > 0) && (end > 0))
-                            picture.Name = image.Url.Substring(start, end - start);
+                            // parse name
+                            // format : /xxx/yyy/zzz/ImageName_XX-XX1234567890.jpg
+                            int start = image.Url.LastIndexOf('/') + 1;
+                            int end = image.Url.IndexOf('_');
+                            if ((start > 0) && (end > 0))
+                                picture.Name = image.Url.Substring(start, end - start);
 
-                        // load the image file asynchronously
-                        WebClient wc = new WebClient();
-                        wc.OpenReadCompleted += new OpenReadCompletedEventHandler(LoadBitmapCompleted);
-                        wc.OpenReadAsync(new Uri(BingUri, image.Url), picture);
+                            // load the image file asynchronously
+                            WebClient wc = new WebClient();
+                            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(LoadBitmapCompleted);
+                            wc.OpenReadAsync(new Uri(BingUri, image.Url), picture);
 
-                        // done
-                        return;
+                            // done
+                            return;
+                        }
                     }
                 }
             }
@@ -312,10 +283,10 @@ namespace PictureViewer
                         picture.Bitmap.SetSource(stream);
 
                         // save to storage
-                        SaveToStorage(picture.Url, stream);
+                        SaveFileToStorage(picture.Url, stream);
 
                         // add picture to dictionary
-                        _pictures.Add(picture.Name, picture);
+                        _pictures.Add(picture);
                     }
                 }
             }
@@ -325,5 +296,4 @@ namespace PictureViewer
         }
     }
 #endregion WebClient
-
 }
