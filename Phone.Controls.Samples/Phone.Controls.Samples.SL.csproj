@@ -59,10 +59,14 @@
     <Compile Include="Common\ManipulationHook.cs" />
     <Compile Include="Common\ManipulationTracker.cs" />
     <Compile Include="Common\ScrollCompletedEvent.cs" />
+    <Compile Include="Common\UIElementCollectionExtensions.cs" />
     <Compile Include="Common\WriteableBitmapExtensions.cs" />
     <Compile Include="Panorama\PanoramaControl.cs" />
     <Compile Include="Panorama\PanoramaItem.cs" />
     <Compile Include="Panorama\PanoramaView.cs" />
+    <Compile Include="Pivot\PivotControl.cs" />
+    <Compile Include="Pivot\PivotItem.cs" />
+    <Compile Include="Pivot\PivotView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

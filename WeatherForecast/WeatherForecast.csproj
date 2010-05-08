@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6C8C6F9D-D3DC-4D60-8935-97E55C5CE07F}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WeatherForecast</RootNamespace>
+    <AssemblyName>WeatherForecast</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile>WindowsPhone</TargetFrameworkProfile>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>WeatherForecast.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>WeatherForecast.App</SilverlightAppEntry>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Phone.Controls" />
+    <Reference Include="Microsoft.Phone.Controls.Navigation" />
+    <Reference Include="Microsoft.Phone.Shell" />
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml.Serialization" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Weather\FakeLoader.cs" />
+    <Compile Include="Weather\FileLoader.cs" />
+    <Compile Include="Weather\BaseTypes\Precipitation.cs" />
+    <Compile Include="Weather\BaseTypes\Pressure.cs" />
+    <Compile Include="Weather\BaseTypes\Speed.cs" />
+    <Compile Include="StringFormatConverter.cs" />
+    <Compile Include="Weather\WeatherArea.cs" />
+    <Compile Include="WeatherControl.cs" />
+    <Compile Include="Weather\Condition.cs" />
+    <Compile Include="Weather\BaseTypes\Temperature.cs" />
+    <Compile Include="Weather\WeatherDetail.cs" />
+    <Compile Include="Weather\WeatherData.cs" />
+    <Compile Include="Weather\Interfaces\IWeatherLoader.cs" />
+    <Compile Include="Weather\WebLoader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\WMAppManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AppBar\appbar.feature.settings.dark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.feature.settings.light.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.minus.dark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.minus.light.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.new.dark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.new.light.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.refresh.dark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AppBar\appbar.refresh.light.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Weather\Icons\wsymbol_0001_sunny.png" />
+    <Resource Include="Weather\Icons\wsymbol_0002_sunny_intervals.png" />
+    <Resource Include="Weather\Icons\wsymbol_0003_white_cloud.png" />
+    <Resource Include="Weather\Icons\wsymbol_0004_black_low_cloud.png" />
+    <Resource Include="Weather\Icons\wsymbol_0005_hazy_sun.png" />
+    <Resource Include="Weather\Icons\wsymbol_0006_mist.png" />
+    <Resource Include="Weather\Icons\wsymbol_0007_fog.png" />
+    <Resource Include="Weather\Icons\wsymbol_0008_clear_sky_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0009_light_rain_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0010_heavy_rain_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0011_light_snow_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0012_heavy_snow_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0013_sleet_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0014_light_hail_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0015_heavy_hail_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0016_thundery_showers.png" />
+    <Resource Include="Weather\Icons\wsymbol_0017_cloudy_with_light_rain.png" />
+    <Resource Include="Weather\Icons\wsymbol_0018_cloudy_with_heavy_rain.png" />
+    <Resource Include="Weather\Icons\wsymbol_0019_cloudy_with_light_snow.png" />
+    <Resource Include="Weather\Icons\wsymbol_0020_cloudy_with_heavy_snow.png" />
+    <Resource Include="Weather\Icons\wsymbol_0021_cloudy_with_sleet.png" />
+    <Resource Include="Weather\Icons\wsymbol_0022_cloudy_with_light_hail.png" />
+    <Resource Include="Weather\Icons\wsymbol_0023_cloudy_with_heavy_hail.png" />
+    <Resource Include="Weather\Icons\wsymbol_0024_thunderstorms.png" />
+    <Resource Include="Weather\Icons\wsymbol_0025_light_rain_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0026_heavy_rain_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0027_light_snow_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0028_heavy_snow_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0029_sleet_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0030_light_hail_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0031_heavy_hail_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0032_thundery_showers_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0033_cloudy_with_light_rain_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0034_cloudy_with_heavy_rain_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0035_cloudy_with_light_snow_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0036_cloudy_with_heavy_snow_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0037_cloudy_with_sleet_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0038_cloudy_with_light_hail_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0039_cloudy_with_heavy_hail_night.png" />
+    <Resource Include="Weather\Icons\wsymbol_0040_thunderstorms_night.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Phone.Controls.Samples\Phone.Controls.Samples.csproj">
+      <Project>{700BA959-2F8B-459F-802A-76836144765B}</Project>
+      <Name>Phone.Controls.Samples</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions />
+</Project>
