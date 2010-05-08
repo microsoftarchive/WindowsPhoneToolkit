@@ -21,8 +21,8 @@ namespace PictureViewer
             InitializeComponent();
 
             // debugging
-            Application.Current.Host.Settings.EnableFrameRateCounter = true;
-            Application.Current.Host.Settings.EnableRedrawRegions = true;
+            //Application.Current.Host.Settings.EnableFrameRateCounter = true;
+            //Application.Current.Host.Settings.EnableRedrawRegions = true;
         }
 
         // Code to execute on Unhandled Exceptions

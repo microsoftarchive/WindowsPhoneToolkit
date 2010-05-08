@@ -11,12 +11,13 @@
         <Setter Property="DefaultItemHeight" Value="622" />
         <Setter Property="FontFamily" Value="Segoe WP Light" />
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="#FF1F1F1F"/>
 
         <!-- PanoramaView template -->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:PanoramaControl">
-                    <Canvas Name="LayoutRoot">
+                    <Canvas Name="LayoutRoot" Background="{TemplateBinding Background}">
 
                         <StackPanel Name="BackgroundPanelHost" Orientation="Horizontal" CacheMode="BitmapCache">
                             <ContentPresenter Name="BackgroundPanel"
