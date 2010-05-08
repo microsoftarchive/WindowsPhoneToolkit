@@ -106,7 +106,6 @@
             <phone:PanoramaItem Header="samples" Width="625" AutoSnap="False">
                 <ListBox x:Name="listBox2"
                          Style="{StaticResource PanoramaImageListBox}"
-                         Height="500"
                          ItemsSource="{Binding Source={StaticResource PicturesLoader}, Path=Samples}"
                          SelectionChanged="listBox_SelectionChanged"/>
             </phone:PanoramaItem>

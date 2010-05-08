@@ -32,7 +32,7 @@ namespace System.Windows.Controls
             double start = 0.0;
             for (int i = 0; i < items.Count; i++)
             {
-                PanoramaItem item = (PanoramaItem)items[i];
+                FrameworkElement item = (FrameworkElement)items[i];
                 if ((position >= start) && (position < start + item.Width))
                     return i;
 

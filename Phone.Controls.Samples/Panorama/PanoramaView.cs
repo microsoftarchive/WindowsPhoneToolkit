@@ -46,10 +46,11 @@ namespace Phone.Controls.Samples
 
         private bool _ready = false;
 
-        public PanoramaView(PanoramaControl parent, Panel root)
+        public PanoramaView(PanoramaControl parent)
         {
-            LayoutRoot = root;
             Parent = parent;
+            LayoutRoot = parent.LayoutRoot;
+            Items = Parent.Items;
 
             BackgroundHost.Transform = new TranslateTransform();
             TitleHost.Transform = new TranslateTransform();
@@ -138,7 +139,6 @@ namespace Phone.Controls.Samples
                 ItemsPanelHost.RenderTransform = ItemsHost.Transform;
 
                 // fetch items details
-                Items = Parent.Items;
                 FrameworkElement item0 = null;
                 FrameworkElement itemN = null;
                 if (Items.Count > 0)
@@ -176,7 +176,7 @@ namespace Phone.Controls.Samples
             }
         }
 
-        public void Reset(bool lazy = true)
+        public void Invalidate(bool lazy = true)
         {
             _ready = false;
 
@@ -331,25 +331,25 @@ namespace Phone.Controls.Samples
             //
             Storyboard = new Storyboard();
             Storyboard.Completed += new EventHandler(Storyboard_Completed);
-            Storyboard.Children.Add(CreateAnimation(BackgroundHost.Transform,- offsetBackground, milliseconds));
-            Storyboard.Children.Add(CreateAnimation(TitleHost.Transform, -offsetTitle, milliseconds));
-            Storyboard.Children.Add(CreateAnimation(ItemsHost.Transform, -offsetItems, milliseconds));
+            Storyboard.Children.Add(CreateAnimation(BackgroundHost.Transform, TranslateTransform.XProperty,- offsetBackground, milliseconds));
+            Storyboard.Children.Add(CreateAnimation(TitleHost.Transform, TranslateTransform.XProperty, -offsetTitle, milliseconds));
+            Storyboard.Children.Add(CreateAnimation(ItemsHost.Transform, TranslateTransform.XProperty, -offsetItems, milliseconds));
             Storyboard.Begin();
         }
 
-        private DoubleAnimation CreateAnimation(TranslateTransform transform, double value, double milliseconds)
+        public DoubleAnimation CreateAnimation(DependencyObject obj, DependencyProperty prop, double value, double milliseconds, EasingMode easing = EasingMode.EaseOut)
         {
-            CubicEase easing = new CubicEase() { EasingMode = EasingMode.EaseOut };
+            CubicEase ease = new CubicEase() { EasingMode = easing };
             DoubleAnimation animation = new DoubleAnimation
             {
                 Duration = new Duration(TimeSpan.FromMilliseconds(milliseconds)),
-                From = Convert.ToInt32(transform.X),
+                From = Convert.ToDouble(obj.GetValue(prop)),
                 To = Convert.ToDouble(value),
                 FillBehavior = FillBehavior.HoldEnd,
-                EasingFunction = easing
+                EasingFunction = ease
             };
-            Storyboard.SetTarget(animation, transform);
-            Storyboard.SetTargetProperty(animation, new PropertyPath(TranslateTransform.XProperty));
+            Storyboard.SetTarget(animation, obj);
+            Storyboard.SetTargetProperty(animation, new PropertyPath(prop));
 
             return animation;
         }

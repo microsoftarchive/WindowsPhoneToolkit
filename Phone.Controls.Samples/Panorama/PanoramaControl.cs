@@ -18,7 +18,7 @@ namespace Phone.Controls.Samples
     {
         // child controls
         private const string LayoutRootName = "LayoutRoot";
-        private Panel LayoutRoot { get; set; }
+        internal Panel LayoutRoot { get; set; }
 
         // scroll view
         private PanoramaView ScrollView;
@@ -36,7 +36,7 @@ namespace Phone.Controls.Samples
             LayoutRoot = GetTemplateChild(LayoutRootName) as Panel;
 
             // scroll view
-            ScrollView = new PanoramaView(this, LayoutRoot);
+            ScrollView = new PanoramaView(this);
             ScrollView.ScrollCompleted += new ScrollCompletedEventHandler(ScrollView_ScrollCompleted);
 
             // control events
@@ -49,14 +49,17 @@ namespace Phone.Controls.Samples
             LayoutRoot.SetValue(Panel.ClipProperty, new RectangleGeometry() { Rect = new Rect(0, 0, this.Width, this.Height) });
 
             // reset scroll viewer
-            ScrollView.Reset(false);
+            Dispatcher.BeginInvoke(() =>
+            {
+                ScrollView.Invalidate(false);
+            });
         }
 
         #region Navigation
         public void ScrollPrev()
         {
-                // complete current animation
-                ScrollView.ScrollSkip();
+            // complete current animation
+            ScrollView.ScrollSkip();
 
             // move to previous item
             ScrollView.ScrollTo(this.SelectedIndex - 1);
@@ -321,21 +324,27 @@ namespace Phone.Controls.Samples
         private static void OnDefaultItemWidthChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             PanoramaControl ctrl = (PanoramaControl)sender;
-            ctrl.UpdateDefaultItemWidth();
+            ctrl.UpdateItemWidthAndHeight();
+        }
+        #endregion
+
+        #region DefaultItemHeight Property
+        public static readonly DependencyProperty DefaultItemHeightProperty = DependencyProperty.Register(
+            "DefaultItemHeight",
+            typeof(double),
+            typeof(PanoramaControl),
+            new PropertyMetadata(OnDefaultItemHeightChanged));
+
+        public double DefaultItemHeight
+        {
+            get { return (double)GetValue(DefaultItemHeightProperty); }
+            set { SetValue(DefaultItemHeightProperty, value); }
         }
 
-        private void UpdateDefaultItemWidth()
+        private static void OnDefaultItemHeightChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            foreach (object o in this.Items)
-            {
-                PanoramaItem item = o as PanoramaItem;
-                if (null != item)
-                {
-                    // reset width for each item
-                    double width = (double)item.GetValue(PanoramaItem.WidthProperty);
-                    item.SetValue(PanoramaItem.WidthProperty, Math.Max(width, DefaultItemWidth));
-                }
-            }
+            PanoramaControl ctrl = (PanoramaControl)sender;
+            ctrl.UpdateItemWidthAndHeight();
         }
         #endregion
 
@@ -347,11 +356,8 @@ namespace Phone.Controls.Samples
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    // BUGBUG : pls optimize this, we don't need to iterate
-                    // thru the entire collection each time a child is added
-
-                    // fixup all items default width
-                    UpdateDefaultItemWidth();
+                    // fixup all items default width and height
+                    UpdateItemWidthAndHeight();
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
@@ -366,9 +372,28 @@ namespace Phone.Controls.Samples
 
             // delay reset the control
             if (null != ScrollView)
-                ScrollView.Reset();
+                ScrollView.Invalidate();
         }
 
+        private void UpdateItemWidthAndHeight()
+        {
+            foreach (object o in this.Items)
+            {
+                PanoramaItem item = o as PanoramaItem;
+                if (null != item)
+                {
+                    // reset width for each item
+                    double width = (double)item.GetValue(PanoramaItem.WidthProperty);
+                    if (double.IsNaN(width)) width = 0;
+                    item.SetValue(PanoramaItem.WidthProperty, Math.Max(width, DefaultItemWidth));
+
+                    // reset height for each item
+                    double height = (double)item.GetValue(PanoramaItem.HeightProperty);
+                    if (double.IsNaN(height)) height = 0;
+                    item.SetValue(PanoramaItem.HeightProperty, Math.Max(height, DefaultItemHeight));
+                }
+            }
+        }
         #endregion
 
         #region SelectedItem

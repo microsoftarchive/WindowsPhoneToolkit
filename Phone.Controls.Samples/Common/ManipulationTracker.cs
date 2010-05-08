@@ -91,7 +91,13 @@ namespace Phone.Controls.Samples
             return !_canceled && !_completed && _tracking;
         }
 
-        public void StopTracking()
+        public void CancelTracking()
+        {
+            _tracking = false;
+            _canceled = true;
+        }
+
+        public void CompleteTracking()
         {
             _tracking = false;
             _completed = true;
