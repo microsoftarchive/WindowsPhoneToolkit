@@ -13,13 +13,12 @@
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}">
-
+    
     <phoneNavigation:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True">
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.refresh.dark.png"/>
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.new.dark.png"/>
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.minus.dark.png"/>
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.feature.settings.dark.png"/>
+            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.refresh.png" Click="AreaRefresh"/>
+            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.new.png" Click="AreaAdd"/>
+            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.minus.png" Click="AreaDelete" IsEnabled="False"/>
         </shell:ApplicationBar>
     </phoneNavigation:PhoneApplicationPage.ApplicationBar>
 
@@ -28,16 +27,24 @@
             <RowDefinition Height="700"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <phone:PivotControl Grid.Row="0" Name="pivot1">
+        
+        <phone:PivotControl Grid.Row="0" Name="pivot1"
+                            SelectionChanged="SelectionChanged">
+            
         </phone:PivotControl>
+        
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <TextBlock Margin="5,0,0,0"
+                       VerticalAlignment="Top"
                        FontFamily="Segoe WP SemiLight"
                        FontSize="16"
-                       Text="Powered by " />
+                       Text="Powered by "/>
             <HyperlinkButton Margin="0,0,5,0"
-                             NavigateUri="http://www.worldweatheronline.com" FontFamily="Segoe WP SemiLight"
+                             VerticalAlignment="Top"
+                             NavigateUri="http://www.worldweatheronline.com"
+                             FontFamily="Segoe WP SemiLight"
                              FontSize="16"
+                             Foreground="{StaticResource PhoneAccentBrush}"
                              Content="World Weather Online"/>
         </StackPanel>
     </Grid>

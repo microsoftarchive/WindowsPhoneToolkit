@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.0">
-  <App xmlns="" ProductID="{cb392680-9bd1-4731-9be7-c1d81e2a7a4e}" Title="PictureViewer" RuntimeType="SilverLight" Version="1.0.0.0" Genre="NormalApp"  Author="" Description="" Publisher="">
+  <App xmlns="" ProductID="{91a3ed3b-f10f-43d8-956d-65893f7b1718}" Title="Picture Viewer" RuntimeType="SilverLight" Version="1.0.0.0" Genre="NormalApp"  Author="" Description="" Publisher="">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -18,11 +18,11 @@
       <DefaultTask  Name ="_default" PlaceHolderString="Default task"/>
     </Tasks>
     <Tokens>
-      <PrimaryToken TokenID="PictureViewerToken" TaskName="_default">
+      <PrimaryToken TokenID="PicturesToken" TaskName="_default">
         <TemplateType5>
           <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
           <Count>0</Count>
-          <Title>PictureViewer</Title>
+          <Title>Pictures</Title>
         </TemplateType5>
       </PrimaryToken>
     </Tokens>

@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6C8C6F9D-D3DC-4D60-8935-97E55C5CE07F}</ProjectGuid>
+    <ProjectGuid>{66A05C31-328E-4579-8DF7-1364DBFC0577}</ProjectGuid>
     <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -48,9 +48,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Phone.Controls" />
+    <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Controls.Navigation" />
     <Reference Include="Microsoft.Phone.Shell" />
+    <Reference Include="System.Device.Location" />
+    <Reference Include="System.Servicemodel" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -64,66 +66,63 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AreaSearch.xaml.cs">
+      <DependentUpon>AreaSearch.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Weather\FakeLoader.cs" />
-    <Compile Include="Weather\FileLoader.cs" />
+    <Compile Include="StringFormatConverter.cs" />
+    <Compile Include="WeatherControl.cs" />
+    <Compile Include="WeatherDataCollection.cs" />
     <Compile Include="Weather\BaseTypes\Precipitation.cs" />
     <Compile Include="Weather\BaseTypes\Pressure.cs" />
     <Compile Include="Weather\BaseTypes\Speed.cs" />
-    <Compile Include="StringFormatConverter.cs" />
-    <Compile Include="Weather\WeatherArea.cs" />
-    <Compile Include="WeatherControl.cs" />
-    <Compile Include="Weather\Condition.cs" />
     <Compile Include="Weather\BaseTypes\Temperature.cs" />
-    <Compile Include="Weather\WeatherDetail.cs" />
+    <Compile Include="Weather\Condition.cs" />
+    <Compile Include="Weather\Services\AreaSearchService.cs" />
+    <Compile Include="Weather\Services\WeatherService.cs" />
+    <Compile Include="Weather\Storage\WeatherStorage.cs" />
+    <Compile Include="Weather\WeatherArea.cs" />
     <Compile Include="Weather\WeatherData.cs" />
-    <Compile Include="Weather\Interfaces\IWeatherLoader.cs" />
-    <Compile Include="Weather\WebLoader.cs" />
+    <Compile Include="Weather\WeatherDetail.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="AreaSearch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\generic.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AppManifest.xml" />
-    <None Include="Properties\WMAppManifest.xml" />
+    <None Include="Properties\WMAppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AppBar\appbar.feature.settings.dark.png">
+    <Content Include="AppBar\appbar.settings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="AppBar\appbar.feature.settings.light.png">
+    <Content Include="AppBar\appbar.minus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="AppBar\appbar.minus.dark.png">
+    <Content Include="AppBar\appbar.new.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="AppBar\appbar.minus.light.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AppBar\appbar.new.dark.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AppBar\appbar.new.light.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AppBar\appbar.refresh.dark.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="AppBar\appbar.refresh.light.png">
+    <Content Include="AppBar\appbar.refresh.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ApplicationIcon.png">
@@ -132,6 +131,7 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Weather\Icons\wsymbol_0000_no_data.png" />
     <Resource Include="Weather\Icons\wsymbol_0001_sunny.png" />
     <Resource Include="Weather\Icons\wsymbol_0002_sunny_intervals.png" />
     <Resource Include="Weather\Icons\wsymbol_0003_white_cloud.png" />

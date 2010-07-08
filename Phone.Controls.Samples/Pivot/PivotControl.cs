@@ -63,7 +63,12 @@ namespace Phone.Controls.Samples
             {
                 ScrollView.Invalidate(false);
             });
-        }   
+        }
+
+        public void Invalidate()
+        {
+            ScrollView.Invalidate();
+        }
 
         #region Navigation
         public void ScrollPrev()
@@ -137,7 +142,7 @@ namespace Phone.Controls.Samples
 
         #region Multitouch events
 #if WINDOWS_PHONE
-        // manipulation tracker
+        ManipulationHook _hook = new ManipulationHook();
         ManipulationTracker _tracker;
         bool _trackHeader;
 
@@ -170,8 +175,14 @@ namespace Phone.Controls.Samples
 
         protected override void OnManipulationStarted(ManipulationStartedEventArgs e)
         {
-            // handle this one
-            e.Handled = true;
+            // manipulation events hook
+            _hook.Hook(e.ManipulationContainer);
+
+            // some controls just swallow the manipulation changes events
+            // this is true with the ScrollViewer inside a ListBox.
+            // register to ManipulationDelta of the source object
+            // so we receive this event regardless of the parent implementation.
+            _hook.HookDeltaHandler(OnManipulationDelta);
 
             // skip current animation (if any)
             ScrollView.ScrollSkip();
@@ -184,14 +195,14 @@ namespace Phone.Controls.Samples
             {
                 // stop tracking Headers when 1/4 of screen size
                 // track Headers and Items position
-                _tracker = new ManipulationTracker(Orientation.Horizontal, LayoutRoot.ActualWidth / 4);
+                _tracker = new ManipulationTracker(Orientation.Horizontal);
                 _tracker.StartTracking(new Point(ScrollView.HeaderPosition, ScrollView.Position));
             }
             else
             {
                 // stop tracking Items when 1/2 of screen size
                 // track Items and Headers position
-                _tracker = new ManipulationTracker(Orientation.Horizontal, LayoutRoot.ActualWidth / 2);
+                _tracker = new ManipulationTracker(Orientation.Horizontal);
                 _tracker.StartTracking(new Point(ScrollView.Position, ScrollView.HeaderPosition));
             }
 
@@ -200,7 +211,6 @@ namespace Phone.Controls.Samples
                 _tracker.CancelTracking();
         }
 
-        ManipulationHook _hack = new ManipulationHook();
         protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
         {
             // manipulation canceled
@@ -208,18 +218,15 @@ namespace Phone.Controls.Samples
 
             if (_tracker.TrackManipulation(e.CumulativeManipulation.Translation))
             {
-                // handle this one
+                // mark as handled to stop
+                // underlying control's manipulations
                 e.Handled = true;
 
-                // cancel capture from current object to disable behaviors
-                // for example, a button will not trigger the Click event
-                // after we've done scrolling
-                UIElement ui = e.ManipulationContainer as UIElement;
-                ui.ReleaseMouseCapture();
-
-                // the above code doesn't seem to work for unknown reasons
-                // let's just hook/override it for now...
-                _hack.Set(e.ManipulationContainer, OnManipulationCompleted);
+                // cancel capture from current object to disable click behavior,
+                // if we've started scrolling. Not sure what the best technique is.
+                // let's just hook/override OnManipulationCompleted
+                // and force e.Handled on it for now...
+                _hook.HookCompletedHandler(OnManipulationCompleted);
 
                 // move to position
                 double position = _tracker.Start.X - e.CumulativeManipulation.Translation.X;
@@ -246,11 +253,9 @@ namespace Phone.Controls.Samples
             // manipulation canceled
             if (_tracker.Canceled) return;
 
-            // handle this one
-            e.Handled = true;
-
             // end tracking
-            _tracker.TrackManipulation(e.TotalManipulation.Translation);
+            // BUGBUG : disable due to empty e.TotalManipulation in #6326
+            //_tracker.TrackManipulation(e.TotalManipulation.Translation);
 
             // get direction
             int direction = 0;
@@ -270,7 +275,7 @@ namespace Phone.Controls.Samples
 
             // not moving at all ?
             // let's find out if a header was clicked
-            if (e.TotalManipulation.Translation.X == 0)
+            if (_tracker.Delta.X == 0)
             {
                 int index = GetHeadersIndexOf(e.ManipulationContainer);
                 if (index != -1)
@@ -482,13 +487,13 @@ namespace Phone.Controls.Samples
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Reset:
+                case NotifyCollectionChangedAction.Replace:
                     // fixup all items default width
                     UpdateItemWidth();
                     UpdateItemHeight();
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                case NotifyCollectionChangedAction.Reset:
-                case NotifyCollectionChangedAction.Replace:
                     break;
             }
 
@@ -504,13 +509,17 @@ namespace Phone.Controls.Samples
                 Headers.Add(ctrl);
             }
 
+            // invalidate the control
+            if (null != ScrollView)
+                ScrollView.Invalidate();
+
             // first inserted ?
             if ((SelectedIndex < 0) && (Items.Count > 0))
                 SelectedIndex = 0;
 
-            // invalidate the control
-            if (null != ScrollView)
-                ScrollView.Invalidate();
+            // invalid selected item ?
+            if (!Items.Contains(SelectedItem) && (Items.Count > 0))
+                SelectedIndex = 0;
         }
         #endregion
 
@@ -578,6 +587,7 @@ namespace Phone.Controls.Samples
 
             // change selection
             ctrl.SelectedIndex = newIndex;
+            ctrl.SelectedItem = (PivotItem)ctrl.Items.GetItem(newIndex);
 
             // change visuals
             ctrl.MoveTo(ctrl.SelectedIndex);

@@ -9,6 +9,8 @@ using System.IO.IsolatedStorage;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace PictureViewer
 {
@@ -28,61 +30,43 @@ namespace PictureViewer
     {
         private static readonly string BingArchiveUrl = "http://www.bing.com/HPImageArchive.aspx?format=xml&idx={0}&n=1";
         private static readonly Uri BingUri = new Uri("http://www.bing.com", UriKind.Absolute);
-        private static readonly int BingImageCount = 15;
+        private static readonly int BingImageCount = 20;
         private static readonly string PicturesFolder = "pictures";
         private static readonly string PicturesConfig = Path.Combine(PicturesFolder, "config.xml");
 
         public static event PicturesLoaderCompletedEventHandler LoadCompleted;
         public static event PicturesLoaderProgressEventHandler LoadProgress;
 
-        private static XmlSerializer _serializer = new XmlSerializer(typeof(List<Picture>));
-        private static List<Picture> _pictures = null;
+        private static XmlSerializer _serializer = new XmlSerializer(typeof(Collection<Picture>));
         private static ManualResetEvent _event = new ManualResetEvent(false);
+        private static ObservableCollection<Picture> _pictures = new ObservableCollection<Picture>();
 
-        public IList<Picture> Recent { get { return PicturesLoader.GetPictures(6); } }
-        public IList<Picture> Samples { get { return PicturesLoader.GetPictures(); } }
+        public static IList<Picture> Pictures { get { return _pictures; } }
+
+        static PicturesLoader()
+        {
+            try
+            {
+                // load pictures from isolated storage
+                InitStorage();
+                LoadPicturesFromStorage();
+            }
+            catch { }
+        }
 
         public static void LoadPicturesAsync()
         {
-            if (null == _pictures)
+            if (_pictures.Count == 0)
             {
-                _pictures = new List<Picture>();
-
-                // load pictures
-                // start with isolated storage
-                InitStorage();
-                if (!LoadPicturesFromStorage())
-                {
-                    // fall back to web
-                    LoadPicturesFromWeb();
-                }
+                // Load from web
+                LoadPicturesFromWeb();
             }
         }
 
-        public static IList<Picture> GetPictures(int max = 0)
+        public static Picture GetPicture(string name)
         {
             // not initialized yet
-            // don't forget to call PicturesLoader.Load
-            if (null == _pictures)
-                return null;
-
-            // query pictureS
-            var q = from p in _pictures
-                    select p;
-
-            // get Top(max)
-            if (max > 0)
-                q = q.Take(max); 
-
-            // return pictures
-            return q.ToList();
-        }
-
-        public static Picture Get(string name)
-        {
-            // not initialized yet
-            // don't forget to call PicturesLoader.Load
-            if (null == _pictures)
+            if (_pictures.Count == 0)
                 return null;
 
             // query pictures, filter on Name
@@ -155,15 +139,21 @@ namespace PictureViewer
                 // load XML
                 using (Stream file = LoadFileFromStorage(PicturesConfig))
                 {
-                    // deserialize xml data to array of pictures
-                    _pictures = (List<Picture>)_serializer.Deserialize(file);
-                    
-                    // load each bitmap image
-                    foreach (var picture in _pictures)
+                    // deserialize xml data to pictures collection.
+                    // add it to _pictures individually,
+                    // to trigger INotifyCollectionChanged.CollectionChanged
+                    Collection<Picture> col = (Collection<Picture>)_serializer.Deserialize(file);
+
+                    // initialize each picture
+                    foreach (var picture in col)
                     {
+                        // load bitmap image
                         picture.Bitmap = new BitmapImage();
                         using (Stream stream = LoadFileFromStorage(picture.Url))
                             picture.Bitmap.SetSource(stream);
+
+                        // add to picture collection
+                        _pictures.Add(picture);
                     }
 
                     // notify we're done
@@ -285,7 +275,7 @@ namespace PictureViewer
                         // save to storage
                         SaveFileToStorage(picture.Url, stream);
 
-                        // add picture to dictionary
+                        // add picture to collection
                         _pictures.Add(picture);
                     }
                 }

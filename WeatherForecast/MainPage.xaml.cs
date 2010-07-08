@@ -1,63 +1,150 @@
 ﻿using System;
-using System.Threading;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
+using System.Device.Location;
 using Microsoft.Phone.Controls;
 using Phone.Controls.Samples;
 using Weather;
+using Microsoft.Phone.Shell;
 
 namespace WeatherForecast
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        // get an ApiKey from http://www.worldweatheronline.com/register.aspx
+        //private const string ApiKey = "0000000000000000000000";
+        private const string ApiKey = "749e16bb43153527100205";
+
+        public static WeatherDataCollection WeatherItems;
+
+        #region Initialize
         public MainPage()
         {
+            AreaSearchService.ApiKey = ApiKey;
+            WeatherService.ApiKey = ApiKey;
+
             InitializeComponent();
 
-            // get an ApiKey from http://www.worldweatheronline.com/register.aspx
-            WebLoader.ApiKey = "0000000000000000000000";
+            // load weather data from storage and insert local
+            WeatherItems = new WeatherDataCollection(WeatherStorage.Load());
+            pivot1.SelectionChanged += new SelectionChangedEventHandler(SelectionChanged);
+            pivot1.ItemsSource = WeatherItems;
 
-            // for now, we'll just load fake data...
-            var Paris = new WeatherArea() { Latitude = 48.870, Longitude = 2.330 };
-            var London = new WeatherArea() { Latitude = 51.500, Longitude = -0.120 };
-            var NewYork = new WeatherArea() { Latitude = 40.710, Longitude = -74.010 };
-            var Seattle = new WeatherArea() { Latitude = 47.610, Longitude = -122.330 };
-            LoadWeather(Paris);
-            LoadWeather(London);
-            LoadWeather(NewYork);
-            LoadWeather(Seattle);
+            // start geo watcher
+            StartLocationService(GeoPositionAccuracy.Low);
         }
+        #endregion
 
-        private void LoadWeather(WeatherArea area)
+        #region GeoCoordinateWatcher
+        private GeoCoordinateWatcher _geo_watcher;
+        private void StartLocationService(GeoPositionAccuracy accuracy)
         {
-            // make the async call
-            ThreadPool.QueueUserWorkItem((state) =>
-            {
-                IWeatherLoader loader = new FakeLoader();
-                WeatherData weather = loader.Load(area);
+#if DEBUG
+            // no location support in the emulator
+            // simulate a GPS fix for Paris, FR
+            WeatherItems[0].Area.Latitude = 48.844908714294434;
+            WeatherItems[0].Area.Longitude = 2.2844648361206055;
+            return;
+#endif
 
-                // add weather data to new pivot tab
-                pivot1.Dispatcher.BeginInvoke(() =>
-                {
-                    pivot1.Items.Add(new PivotItem()
-                    {
-                        Title = weather.Area.Country.ToUpper(),
-                        Header = weather.Area.City.ToLower(),
-                        Content = new WeatherControl()
-                        {
-                            Source = weather
-                        }
-                    });
-                });
-            });
+            // reinitialize the GeoCoordinateWatcher
+            _geo_watcher = new GeoCoordinateWatcher(accuracy);
+            _geo_watcher.MovementThreshold = 20;
+
+            // add event handlers for StatusChanged and PositionChanged events
+            _geo_watcher.PositionChanged += new EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>>(PositionChanged);
+
+            // start data acquisition
+            _geo_watcher.Start();
         }
+
+        private void PositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
+        {
+            GeoCoordinateWatcher watcher = (GeoCoordinateWatcher)sender;
+            if (watcher.Status == GeoPositionStatus.Ready)
+            {
+                WeatherItems[0].Area.Latitude = e.Position.Location.Latitude;
+                WeatherItems[0].Area.Longitude = e.Position.Location.Longitude;
+            }
+        }
+        #endregion
+
+        #region Refresh
+        private void Refresh(PivotItem item)
+        {
+            WeatherData weather = WeatherItems[item];
+
+            // skip (0,0) location
+            if (!double.IsNaN(weather.Area.Longitude) &&
+                !double.IsNaN(weather.Area.Latitude))
+            {
+                WeatherService ws = new WeatherService();
+                ws.LoadAsyncCompleted += new WeatherLoadAsyncHandler(RefreshAsyncCompleted);
+                ws.LoadAsync(weather.Area, item);
+            }
+        }
+
+        void RefreshAsyncCompleted(object sender, WeatherLoadAsyncEventArgs e)
+        {
+            if (null == e.Error)
+            {
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    PivotItem item = (PivotItem)e.UserState;
+                    WeatherData weather = WeatherItems[item];
+                    e.Weather.Area = weather.Area;
+                    WeatherItems[item] = e.Weather;
+                });
+            }
+        }
+        #endregion
+
+        #region AppBar
+        private void AreaRefresh(object sender, EventArgs e)
+        {
+            foreach (PivotItem item in pivot1.Items)
+            {
+                Refresh(item);
+            }
+        }
+
+        private void AreaAdd(object sender, EventArgs e)
+        {
+            Uri uri = new Uri("/AreaSearch.xaml", UriKind.Relative);
+            NavigationService.Navigate(uri);
+        }
+
+        private void AreaDelete(object sender, EventArgs e)
+        {
+            // selected item
+            PivotItem item = pivot1.SelectedItem;
+            if (null != item)
+            {
+                // selected weather data
+                WeatherData weather = WeatherItems[item];
+
+                // delete selected area
+                string szTitle = weather.Area.City;
+                string szMessage = "Are you sure you want to delete this Area ?";
+
+                if (MessageBox.Show(szMessage, szTitle, MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    WeatherItems.Remove(weather);
+                }
+            }
+        }
+
+        void SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            const int iCmdDel = 2;
+
+            if (null != ApplicationBar)
+            {
+                ApplicationBarIconButton button = (ApplicationBarIconButton)ApplicationBar.Buttons[iCmdDel];
+                button.IsEnabled = (pivot1.SelectedIndex != 0);
+            }
+        }
+        #endregion
     }
 }

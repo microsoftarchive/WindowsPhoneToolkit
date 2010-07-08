@@ -22,6 +22,7 @@ namespace Weather
             string fmt = string.Format("/{0};component{1}/{{0}}.png", Module, IconFolder);
 
             All = new Dictionary<int, Condition>();
+            All.Add(0, new Condition() { Code = 0, Desc = "No data", IconDay = string.Format(fmt, "wsymbol_0000_no_data"), IconNight = string.Format(fmt, "wsymbol_0000_no_data") });
             All.Add(395, new Condition() { Code = 395, Desc = "Moderate or heavy snow in area with thunder", IconDay = string.Format(fmt, "wsymbol_0012_heavy_snow_showers"), IconNight = string.Format(fmt, "wsymbol_0028_heavy_snow_showers_night") });
             All.Add(392, new Condition() { Code = 392, Desc = "Patchy light snow in area with thunder", IconDay = string.Format(fmt, "wsymbol_0016_thundery_showers"), IconNight = string.Format(fmt, "wsymbol_0032_thundery_showers_night") });
             All.Add(389, new Condition() { Code = 389, Desc = "Moderate or heavy rain in area with thunder", IconDay = string.Format(fmt, "wsymbol_0024_thunderstorms"), IconNight = string.Format(fmt, "wsymbol_0040_thunderstorms_night") });

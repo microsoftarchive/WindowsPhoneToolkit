@@ -7,6 +7,9 @@ namespace Weather
     [XmlRoot("data")]
     public class WeatherData
     {
+        internal const string LocalTitle = "Weather";
+        internal const string LocalHeader = "Local";
+
         [XmlElement("nearest_area")]
         public WeatherArea Area { get; set; }
 

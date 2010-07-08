@@ -92,6 +92,7 @@ namespace Phone.Controls.Samples
                 bitmap.Invalidate();
                 image = new Image();
                 image.Source = bitmap;
+                image.CacheMode = new BitmapCache();
                 panel.Children[0] = image;
                 double offset = bitmap.PixelWidth;
 
@@ -103,6 +104,7 @@ namespace Phone.Controls.Samples
                 bitmap.Invalidate();
                 image = new Image();
                 image.Source = bitmap;
+                image.CacheMode = new BitmapCache();
                 panel.Children[2] = image;
 
                 // adjust panel position

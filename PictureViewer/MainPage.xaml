@@ -11,34 +11,26 @@
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    BackKeyPress="PhoneApplicationPage_BackKeyPress">
+    Foreground="{StaticResource PhoneForegroundBrush}">
 
     <UserControl.Resources>
         <my:PicturesLoader x:Key="PicturesLoader"/>
         
         <Style x:Key="PanoramaTextBlock" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="40"/>
             <Setter Property="Height" Value="64"/>
         </Style>
-        
+
         <Style x:Key="PanoramaTextListBox" TargetType="ListBox">
-            <Setter Property="Padding" Value="1"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="VerticalContentAlignment" Value="Top"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}"/>
-            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <TextBlock Text="{Binding Name}" Style="{StaticResource PanoramaTextBlock}"/>
+                                    <TextBlock Text="{Binding Name}"
+                                               Style="{StaticResource PanoramaTextBlock}"/>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
@@ -48,21 +40,12 @@
         </Style>
         
         <Style x:Key="PanoramaImageListBox" TargetType="ListBox">
-            <Setter Property="Padding" Value="1"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="VerticalContentAlignment" Value="Top"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}"/>
-            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <my:MultiColumnsPanel HorizontalAlignment="Left" VerticalAlignment="Top" Columns="3"/>
+                        <my:MultiColumnsPanel Columns="3"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"/>
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
@@ -73,7 +56,6 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Image Width="185" Margin="0,0,12,12"
-                                           Opacity="0.75"
                                            Source="{Binding Bitmap}"/>
                                 </ControlTemplate>
                             </Setter.Value>
@@ -87,37 +69,43 @@
     <Grid x:Name="RootLayout">
         <phone:PanoramaControl x:Name="panorama1"
                                Title="pictures"
+                               Foreground="White"
                                BackgroundImage="/PictureViewer;component/Resources/panorama.jpg">
-            <phone:PanoramaItem Header="gallery">
+
+            <phone:PanoramaItem Header="gallery" Foreground="White">
                 <StackPanel CacheMode="BitmapCache">
                     <TextBlock Text="albums" Style="{StaticResource PanoramaTextBlock}"/>
                     <TextBlock Text="all" Style="{StaticResource PanoramaTextBlock}"/>
                     <TextBlock Text="favorites" Style="{StaticResource PanoramaTextBlock}"/>
                 </StackPanel>
             </phone:PanoramaItem>
-            
-            <phone:PanoramaItem Header="recent">
+
+            <phone:PanoramaItem Header="recent" Foreground="White">
                 <ListBox x:Name="listBox1"
+                         HorizontalAlignment="Left"
+                         Width="400"
+                         ItemsSource="{Binding Source={StaticResource PicturesLoader}, Path=Pictures}"
                          Style="{StaticResource PanoramaTextListBox}"
-                         ItemsSource="{Binding Source={StaticResource PicturesLoader}, Path=Recent}"
                          SelectionChanged="listBox_SelectionChanged"/>
             </phone:PanoramaItem>
 
-            <phone:PanoramaItem Header="samples" Width="625" AutoSnap="False">
+            <phone:PanoramaItem Header="samples" Width="625" AutoSnap="False" Foreground="White">
                 <ListBox x:Name="listBox2"
+                         HorizontalAlignment="Left"
+                         Width="600"
+                         ItemsSource="{Binding Source={StaticResource PicturesLoader}, Path=Pictures}"
                          Style="{StaticResource PanoramaImageListBox}"
-                         ItemsSource="{Binding Source={StaticResource PicturesLoader}, Path=Samples}"
                          SelectionChanged="listBox_SelectionChanged"/>
             </phone:PanoramaItem>
 
-            <phone:PanoramaItem Header="what's new">
+            <phone:PanoramaItem Header="what's new" Foreground="White">
                 <StackPanel CacheMode="BitmapCache">
                     <TextBlock Text="something new ?" Style="{StaticResource PanoramaTextBlock}"/>
                     <TextBlock Text="nothing new" Style="{StaticResource PanoramaTextBlock}"/>
                     <TextBlock Text="too bad" Style="{StaticResource PanoramaTextBlock}"/>
                 </StackPanel>
             </phone:PanoramaItem>
-            
+
         </phone:PanoramaControl>
     </Grid>
 

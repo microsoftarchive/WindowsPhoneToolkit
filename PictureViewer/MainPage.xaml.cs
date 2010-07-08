@@ -22,6 +22,16 @@ namespace PictureViewer
             InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(Microsoft.Phone.Navigation.PhoneNavigationEventArgs e)
+        {
+            if (PicturesLoader.Pictures.Count == 0)
+            {
+                // first time in, let's fetch the pictures from the web
+                NavigationService.Navigate(new Uri("/Loader.xaml", UriKind.Relative));
+                return;
+            }
+        }
+
         private void ShowPicture(string name)
         {
             Uri uri = new Uri(string.Format("/PicturePage.xaml?picture={0}", name), UriKind.Relative);
@@ -38,15 +48,6 @@ namespace PictureViewer
                 // reset selection
                 ((ListBox)sender).SelectedIndex = -1;
             }
-        }
-
-        private void PhoneApplicationPage_BackKeyPress(object sender, CancelEventArgs e)
-        {
-            // allow the back key
-            e.Cancel = false;
-
-            // go back further, skipping past the splash screen
-            NavigationService.GoBack();
         }
     }
 }

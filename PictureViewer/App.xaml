@@ -8,7 +8,7 @@
     
     <!--RootFrame points to and loads the first page of your application-->
     <Application.RootVisual>
-        <phoneNavigation:PhoneApplicationFrame x:Name="RootFrame" Source="/Splash.xaml"/>
+        <phoneNavigation:PhoneApplicationFrame x:Name="RootFrame" Source="/MainPage.xaml"/>
     </Application.RootVisual>
 
     <!-- Resources for following the Windows Phone design guidelines -->
@@ -234,7 +234,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Style x:Key="PhoneListBoxItemLayout" TargetType="mpc:ListViewItem">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="ImageStretch" Value="UniformToFill" />
@@ -562,5 +562,6 @@
         </Style>
         <!--****** PHONE TOGGLESWITCH TEMPLATE ******-->
     </Application.Resources>
+
 
 </Application>

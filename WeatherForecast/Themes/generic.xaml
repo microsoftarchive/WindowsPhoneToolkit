@@ -17,59 +17,64 @@
 
     <!--WeatherControl style-->
     <Style TargetType="local:WeatherControl">
+        <Setter Property="SampleData" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:WeatherControl">
                     <StackPanel Orientation="Vertical">
-                        <Grid Height="155">
+                        <Grid Height="160">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="80" />
-                                <RowDefinition Height="30" />
+                                <RowDefinition Height="40" />
+                                <RowDefinition Height="40" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="130" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Border BorderBrush="#FF999999"
                                     BorderThickness="5"
                                     Grid.RowSpan="3"
-                                    Height="138" Width="138">
-                                <Image Height="128" Width="128"
+                                    Height="148" Width="148">
+                                <Image Height="148" Width="148"
                                         Source="{Binding Path=Source.Detail.IconUrl, RelativeSource={RelativeSource TemplatedParent}}"/>
                             </Border>
-                            <TextBlock Grid.Row="0" Grid.Column="1"
-                                        HorizontalAlignment="Left" VerticalAlignment="Center"
-                                        Style="{StaticResource PhoneTextExtraLargeStyle}"
-                                        Margin="10,10,0,10"
-                                        Text="{Binding Path=Source.Detail.Temperature, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                                       Style="{StaticResource PhoneTextExtraLargeStyle}"
+                                       FontWeight="SemiBold"
+                                       Margin="10,10,0,10"
+                                       Text="{Binding Path=Source.Detail.Temperature, RelativeSource={RelativeSource TemplatedParent}}"/>
                             <TextBlock Grid.Row="0" Grid.Column="2"
-                                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                                        TextAlignment="Right" TextWrapping="Wrap"
-                                        Style="{StaticResource PhoneTextNormalStyle}"
-                                        Margin="0,10,10,10"
-                                        Text="{Binding Path=Source.Detail.Description, RelativeSource={RelativeSource TemplatedParent}}"/>
-                            <TextBlock Grid.Row="1" Grid.Column="2"
-                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                        Style="{StaticResource PhoneTextSubtleStyle}"
-                                        Margin="0,0,10,0"
-                                        Text="{Binding Path=Source.Detail.Humidity, RelativeSource={RelativeSource TemplatedParent},
+                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                       Style="{StaticResource PhoneTextSubtleStyle}"
+                                       Margin="0,0,10,0"
+                                       Text="{Binding Path=Source.Detail.Humidity, RelativeSource={RelativeSource TemplatedParent},
                                                 ConverterParameter={StaticResource HumidityFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="2"
-                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                        Style="{StaticResource PhoneTextSubtleStyle}"
-                                        Margin="0,0,10,0"
-                                        Text="{Binding Path=Source.Detail.CloudCover, RelativeSource={RelativeSource TemplatedParent},
+                            <TextBlock Grid.Row="1" Grid.Column="2"
+                                       HorizontalAlignment="Right" VerticalAlignment="Top"
+                                       Style="{StaticResource PhoneTextSubtleStyle}"
+                                       Margin="0,0,10,0"
+                                       Text="{Binding Path=Source.Detail.CloudCover, RelativeSource={RelativeSource TemplatedParent},
                                                 ConverterParameter={StaticResource CloudFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       TextAlignment="Right" TextWrapping="Wrap"
+                                       Style="{StaticResource PhoneTextNormalStyle}"
+                                       FontSize="26"
+                                       Margin="0,10,10,10"
+                                       Text="{Binding Path=Source.Detail.Description, RelativeSource={RelativeSource TemplatedParent}}"/>
                         </Grid>
                         <ListBox
-                                 VerticalAlignment="Top"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                 HorizontalContentAlignment="Left"
-                                 VerticalContentAlignment="Top"
-                                 ItemsSource="{Binding Path=Source.Forecast, RelativeSource={RelativeSource TemplatedParent}}">
+                            VerticalAlignment="Top"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            HorizontalContentAlignment="Left"
+                            VerticalContentAlignment="Top"
+                            Margin="0,40,0,0"
+                            Height="300"
+                            ItemsSource="{Binding Path=Source.Forecast, RelativeSource={RelativeSource TemplatedParent}}">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Vertical"/>
@@ -88,56 +93,45 @@
                             </ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid>
+                                    <Grid Background="{StaticResource PhoneBackgroundBrush}">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="140*" />
-                                            <ColumnDefinition Width="110*" />
-                                            <ColumnDefinition Width="120*" />
-                                            <ColumnDefinition Width="80*" />
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="110" />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="35"/>
-                                            <RowDefinition Height="35"/>
+                                            <RowDefinition Height="50"/>
+                                            <RowDefinition Height="50"/>
                                         </Grid.RowDefinitions>
                                         <TextBlock Grid.Column="0" Grid.Row="0"
                                                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                                    Style="{StaticResource PhoneTextNormalStyle}"
                                                    Margin="0,0,5,0"
-                                                   FontSize="22"
+                                                   FontSize="26"
                                                    Text="{Binding Date,
                                                         ConverterParameter={StaticResource NormalDateFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
                                         <TextBlock Grid.Column="0" Grid.Row="1"
                                                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                                                   Style="{StaticResource PhoneTextSubtleStyle}" FontSize="15"
+                                                   Style="{StaticResource PhoneTextSubtleStyle}"
                                                    Margin="0,0,5,0"
+                                                   FontSize="22"
                                                    Text="{Binding Date,
                                                         ConverterParameter={StaticResource DayDateFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
                                         <TextBlock Grid.Column="1" Grid.Row="0"
                                                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
                                                    Style="{StaticResource PhoneTextNormalStyle}"
-                                                   FontSize="18"
+                                                   FontSize="22"
                                                    Text="{Binding TemperatureMax,
                                                         ConverterParameter={StaticResource TempMaxFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
                                         <TextBlock Grid.Column="1" Grid.Row="1"
                                                    HorizontalAlignment="Center" VerticalAlignment="Top"
                                                    Style="{StaticResource PhoneTextNormalStyle}"
-                                                   FontSize="18"
+                                                   FontSize="22"
                                                    Text="{Binding TemperatureMin,
                                                         ConverterParameter={StaticResource TempMinFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
-                                        <TextBlock Grid.Column="2" Grid.Row="0"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                                                   Style="{StaticResource PhoneTextNormalStyle}"
-                                                   FontSize="18"
-                                                   Text="{Binding WindSpeed,
-                                                        ConverterParameter={StaticResource WindSpeedFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
-                                        <TextBlock Grid.Column="2" Grid.Row="1"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Top"
-                                                   Style="{StaticResource PhoneTextNormalStyle}"
-                                                   FontSize="18"
-                                                   Text="{Binding Precipitation,
-                                                        ConverterParameter={StaticResource RainFormat}, Converter={StaticResource StringFormatConverter}, Mode=OneWay}"/>
                                         <Image Grid.Column="3" Grid.RowSpan="2"
-                                               Height="60" Width="60"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                               Height="80" Width="80"
                                                Source="{Binding IconUrl}"/>
                                     </Grid>
                                 </DataTemplate>

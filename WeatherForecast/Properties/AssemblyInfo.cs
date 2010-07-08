@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("WeatherForecast")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft IT")]
-[assembly: AssemblyProduct("WeatherForecast")]
-[assembly: AssemblyCopyright("Copyright © Microsoft IT 2009")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("TestPhoneApp")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

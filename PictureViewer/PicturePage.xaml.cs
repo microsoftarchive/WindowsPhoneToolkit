@@ -23,7 +23,7 @@ namespace PictureViewer
         protected override void OnNavigatedTo(Microsoft.Phone.Navigation.PhoneNavigationEventArgs e)
         {
             string name = NavigationContext.QueryString["picture"];
-            Picture pic = PicturesLoader.Get(name);
+            Picture pic = PicturesLoader.GetPicture(name);
 
             picture1.Source = pic.Bitmap;
         }

@@ -19,6 +19,10 @@ namespace WeatherForecast
             UnhandledException += new EventHandler<ApplicationUnhandledExceptionEventArgs>(Application_UnhandledException);
 
             InitializeComponent();
+
+            // debugging
+            //Application.Current.Host.Settings.EnableFrameRateCounter = true;
+            //Application.Current.Host.Settings.EnableRedrawRegions = true;
         }
 
         // Code to execute on Unhandled Exceptions

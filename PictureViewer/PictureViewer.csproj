@@ -48,6 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Controls" />
     <Reference Include="Microsoft.Phone.Controls.Navigation" />
     <Reference Include="System.Windows" />
@@ -66,16 +67,16 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MultiColumnsPanel.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="PicturePage.xaml.cs">
       <DependentUpon>PicturePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="PicturesLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splash.xaml.cs">
-      <DependentUpon>Splash.xaml</DependentUpon>
+    <Compile Include="Loader.xaml.cs">
+      <DependentUpon>Loader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MultiColumnsPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -90,7 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Splash.xaml">
+    <Page Include="Loader.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -106,9 +107,15 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Resources\panorama.jpg" />
-    <Resource Include="Resources\bingLogo.png" />
-    <Resource Include="Resources\bingLogo_reverse.png" />
+    <Resource Include="Resources\bingLogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\bingLogo_reverse.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\panorama.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Phone.Controls.Samples\Phone.Controls.Samples.csproj">
