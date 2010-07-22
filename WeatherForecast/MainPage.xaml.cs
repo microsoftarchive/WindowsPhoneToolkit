@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Device.Location;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Notification;
 using Phone.Controls.Samples;
 using Weather;
 using Microsoft.Phone.Shell;
@@ -31,8 +32,12 @@ namespace WeatherForecast
             pivot1.SelectionChanged += new SelectionChangedEventHandler(SelectionChanged);
             pivot1.ItemsSource = WeatherItems;
 
+            // manage application lifecycle
+            PhoneApplicationService.Current.Deactivated += new EventHandler<DeactivatedEventArgs>(PhoneApplicationService_Deactivated);
+            PhoneApplicationService.Current.Closing += new EventHandler<ClosingEventArgs>(PhoneApplicationService_Closing);
+
             // start geo watcher
-            StartLocationService(GeoPositionAccuracy.Low);
+            StartLocationService(GeoPositionAccuracy.Default);
         }
         #endregion
 
@@ -144,6 +149,18 @@ namespace WeatherForecast
                 ApplicationBarIconButton button = (ApplicationBarIconButton)ApplicationBar.Buttons[iCmdDel];
                 button.IsEnabled = (pivot1.SelectedIndex != 0);
             }
+        }
+        #endregion
+
+        #region Lifecycle
+        void PhoneApplicationService_Deactivated(object sender, DeactivatedEventArgs e)
+        {
+            WeatherStorage.Save(WeatherItems.Items);
+        }
+
+        void PhoneApplicationService_Closing(object sender, ClosingEventArgs e)
+        {
+            WeatherStorage.Save(WeatherItems.Items);
         }
         #endregion
     }

@@ -22,7 +22,7 @@ namespace PictureViewer
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(Microsoft.Phone.Navigation.PhoneNavigationEventArgs e)
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             if (PicturesLoader.Pictures.Count == 0)
             {

@@ -20,7 +20,7 @@ namespace PictureViewer
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(Microsoft.Phone.Navigation.PhoneNavigationEventArgs e)
+        protected override void  OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             string name = NavigationContext.QueryString["picture"];
             Picture pic = PicturesLoader.GetPicture(name);

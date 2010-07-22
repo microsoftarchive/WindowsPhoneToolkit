@@ -49,9 +49,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Phone" />
-    <Reference Include="Microsoft.Phone.Controls.Navigation" />
-    <Reference Include="Microsoft.Phone.Shell" />
-    <Reference Include="System.Device.Location" />
+    <Reference Include="System.Device" />
     <Reference Include="System.Servicemodel" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />

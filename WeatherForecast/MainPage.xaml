@@ -2,9 +2,9 @@
     x:Class="WeatherForecast.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:phoneNavigation="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Navigation"
+    xmlns:phoneNavigation="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:phone="clr-namespace:Phone.Controls.Samples;assembly=Phone.Controls.Samples"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone.Shell"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:weather="clr-namespace:WeatherForecast"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -16,9 +16,9 @@
     
     <phoneNavigation:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True">
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.refresh.png" Click="AreaRefresh"/>
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.new.png" Click="AreaAdd"/>
-            <shell:ApplicationBarIconButton IconUri="/AppBar/appbar.minus.png" Click="AreaDelete" IsEnabled="False"/>
+            <shell:ApplicationBarIconButton Text="Refresh" IconUri="/AppBar/appbar.refresh.png" Click="AreaRefresh"/>
+            <shell:ApplicationBarIconButton Text="Add" IconUri="/AppBar/appbar.new.png" Click="AreaAdd"/>
+            <shell:ApplicationBarIconButton Text="Delete" IconUri="/AppBar/appbar.minus.png" Click="AreaDelete" IsEnabled="False"/>
         </shell:ApplicationBar>
     </phoneNavigation:PhoneApplicationPage.ApplicationBar>
 
