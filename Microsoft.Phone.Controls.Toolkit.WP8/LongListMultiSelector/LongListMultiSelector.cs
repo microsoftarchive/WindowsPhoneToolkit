@@ -908,6 +908,18 @@ namespace Microsoft.Phone.Controls
         }
 
         /// <summary>
+        /// Scrolls to a specified item in the Microsoft.Phone.Controls.LongListSelector.
+        /// </summary>
+        /// <param name="item">The list item to scroll to.</param>
+        public void ScrollTo(object item)
+        {
+            if (_innerSelector != null)
+            {
+                _innerSelector.ScrollTo(item);
+            }
+        }
+
+        /// <summary>
         /// Applies a new state to all items. Visible items will use transitions if useTransitions parameter is set, others will not
         /// </summary>
         /// <param name="state">State to apply</param>
