@@ -33,8 +33,10 @@ namespace Microsoft.Phone.Controls
         public static void GetItemsInViewPort(LongListSelector list, IList<WeakReference> items)
         {
             DependencyObject child = list;
+            int childCount;
 
-            if (VisualTreeHelper.GetChildrenCount(list) == 0)
+            childCount = VisualTreeHelper.GetChildrenCount(list);
+            if (childCount == 0)
             {
                 // no child yet
                 return;
@@ -42,25 +44,30 @@ namespace Microsoft.Phone.Controls
 
             list.UpdateLayout();
 
+            Canvas headersPanel;
+
             do
             {
                 child = VisualTreeHelper.GetChild(child, 0);
-            } while (VisualTreeHelper.GetChildrenCount(child) > 0 && !(child is Canvas));
+                childCount = VisualTreeHelper.GetChildrenCount(child);
+                headersPanel = child as Canvas;
+            } while ((headersPanel == null) && childCount > 0);
 
-            if (child is Canvas && 
-                VisualTreeHelper.GetChildrenCount(child) > 0 && 
-                VisualTreeHelper.GetChild(child, 0) is Canvas)
+            if (headersPanel != null &&
+                childCount > 0)
             {
-                Canvas headersPanel = (Canvas)child;
-                Canvas itemsPanel = (Canvas)VisualTreeHelper.GetChild(child, 0);
-                var itemsInList = new List<KeyValuePair<double, FrameworkElement>>();
-
-                AddVisibileContainers(list, itemsPanel, itemsInList, /* selectContent = */ false);
-                AddVisibileContainers(list, headersPanel, itemsInList, /* selectContent = */ true);
-
-                foreach (var pair in itemsInList.OrderBy(selector => selector.Key))
+                Canvas itemsPanel = VisualTreeHelper.GetChild(headersPanel, 0) as Canvas;
+                if (itemsPanel != null)
                 {
-                    items.Add(new WeakReference(pair.Value));
+                    var itemsInList = new List<KeyValuePair<double, FrameworkElement>>();
+
+                    AddVisibileContainers(list, itemsPanel, itemsInList, /* selectContent = */ false);
+                    AddVisibileContainers(list, headersPanel, itemsInList, /* selectContent = */ true);
+
+                    foreach (var pair in itemsInList.OrderBy(selector => selector.Key))
+                    {
+                        items.Add(new WeakReference(pair.Value));
+                    }
                 }
             }
         }
@@ -78,7 +85,7 @@ namespace Microsoft.Phone.Controls
         /// </param>
         private static void AddVisibileContainers(LongListSelector list, Canvas itemsPanel, List<KeyValuePair<double, FrameworkElement>> items, bool selectContent)
         {
-            foreach (DependencyObject obj in VisualTreeExtensions.GetVisualChildren(itemsPanel))
+            foreach (DependencyObject obj in itemsPanel.GetVisualChildren())
             {
                 ContentPresenter container = obj as ContentPresenter;
                 if (container != null &&

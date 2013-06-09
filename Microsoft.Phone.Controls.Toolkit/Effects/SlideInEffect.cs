@@ -450,15 +450,15 @@ namespace Microsoft.Phone.Controls
             }
 
             DependencyObject parent = pivotItem;
+            ItemsPresenter ip;
             do
             {
                 parent = VisualTreeHelper.GetParent(parent);
-            } while (parent != null & !(parent is ItemsPresenter));
+                ip = parent as ItemsPresenter;
+            } while ((ip == null) && (parent != null));
 
-            if (parent != null)
+            if (ip != null)
             {
-                ItemsPresenter ip = (ItemsPresenter)parent;
-
                 if (ip.RenderTransform is TranslateTransform)
                 {
                     Storyboard storyboard = new Storyboard();
