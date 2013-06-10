@@ -24,7 +24,7 @@ namespace Microsoft.Phone.Controls
         /// <returns>
         /// A list of weak references to the items in the view port.
         /// </returns>
-        public static IList<WeakReference> GetItemsInViewPort(ItemsControl list)
+        public static IList<WeakReference> GetItemsInViewPort(this ItemsControl list)
         {
             IList<WeakReference> viewPortItems = new List<WeakReference>();
 
@@ -45,7 +45,7 @@ namespace Microsoft.Phone.Controls
         /// The list of weak references where the items in 
         /// the view port will be added.
         /// </param>
-        public static void GetItemsInViewPort(ItemsControl list, IList<WeakReference> items)
+        public static void GetItemsInViewPort(this ItemsControl list, IList<WeakReference> items)
         {
             int index;
             FrameworkElement container;
