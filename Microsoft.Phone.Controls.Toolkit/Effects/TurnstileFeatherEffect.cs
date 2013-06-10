@@ -682,8 +682,7 @@ namespace Microsoft.Phone.Controls
             if (!TurnstileFeatherEffect.GetIsSubscribed(target))
             {
                 // Find the parent page.
-                PhoneApplicationPage page = TemplatedVisualTreeExtensions.GetParentByType<PhoneApplicationPage>(target);
-
+                PhoneApplicationPage page = target.GetParentByType<PhoneApplicationPage>();
                 if (page == null)
                 {
                     return;

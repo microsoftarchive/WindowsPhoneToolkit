@@ -449,14 +449,8 @@ namespace Microsoft.Phone.Controls
                 return;
             }
 
-            DependencyObject parent = pivotItem;
-            ItemsPresenter ip;
-            do
-            {
-                parent = VisualTreeHelper.GetParent(parent);
-                ip = parent as ItemsPresenter;
-            } while ((ip == null) && (parent != null));
-
+            // Find the root ItemsPresenter
+            ItemsPresenter ip = pivotItem.GetParentByType<ItemsPresenter>();
             if (ip != null)
             {
                 if (ip.RenderTransform is TranslateTransform)
@@ -572,7 +566,7 @@ namespace Microsoft.Phone.Controls
                         pivotItem = iTemp;
                     }
 
-                    parent = VisualTreeHelper.GetParent(parent as DependencyObject);
+                    parent = VisualTreeHelper.GetParent(parent);
                 }
 
                 if (parent == null || pivotItem == null)
