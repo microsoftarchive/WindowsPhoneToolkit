@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace Microsoft.Phone.Controls
@@ -19,9 +18,8 @@ namespace Microsoft.Phone.Controls
     internal static class LongListSelectorExtensions
     {
         /// <summary>
-        /// Gets the items that are currently in the viewport
-        /// of a LongListSelector and adds them
-        /// into a list of weak references.
+        /// Gets the items that are currently in the viewport of a 
+        /// <see cref="T:LongListSelector" /> and adds them into a list of weak references.
         /// </summary>
         /// <param name="list">
         /// The LongListSelector instance to search on.
@@ -30,7 +28,7 @@ namespace Microsoft.Phone.Controls
         /// The list of weak references where the items in 
         /// the viewport will be added.
         /// </param>
-        public static void GetItemsInViewPort(LongListSelector list, IList<WeakReference> items)
+        public static void GetItemsInViewPort(this LongListSelector list, IList<WeakReference> items)
         {
             DependencyObject child = list;
             int childCount;
@@ -79,9 +77,10 @@ namespace Microsoft.Phone.Controls
         /// <param name="itemsPanel">Direct parent of the items.</param>
         /// <param name="items">List to populate with the containers currently in the viewport</param>
         /// <param name="selectContent">
-        ///     Specifies whether to return the container or its content.
-        ///     For headers, we can't apply projections on the container directly (or everything will go blank), 
-        ///     so we will apply them on the content instead.
+        /// Specifies whether to return the container or its content.
+        /// For headers, we can't apply projections on the container directly 
+        /// (or everything will go blank), so we will apply them on the 
+        /// content instead.
         /// </param>
         private static void AddVisibileContainers(LongListSelector list, Canvas itemsPanel, List<KeyValuePair<double, FrameworkElement>> items, bool selectContent)
         {
